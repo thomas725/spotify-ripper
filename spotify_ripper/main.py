@@ -28,7 +28,7 @@ def load_config(defaults):
     config_file = os.path.join(_settings_dir, "config.ini")
     if os.path.exists(config_file):
         try:
-            config = ConfigParser.SafeConfigParser()
+            config = ConfigParser.ConfigParser()
             config.read(config_file)
             if not config.has_section("main"):
                 return defaults
