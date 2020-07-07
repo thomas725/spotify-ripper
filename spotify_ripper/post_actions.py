@@ -11,7 +11,6 @@ import codecs
 import shutil
 from spotify_ripper.remove_all_from_playlist import remove_all_from_playlist
 
-
 class PostActions(object):
     tracks_to_remove = []
     fail_log_file = None
@@ -29,9 +28,7 @@ class PostActions(object):
                 os.makedirs(enc_str(_base_dir))
 
             encoding = "ascii" if args.ascii else "utf-8"
-            self.fail_log_file = codecs.open(
-                enc_str(os.path.join(_base_dir, args.fail_log)),
-                'w', encoding)
+            self.fail_log_file = codecs.open(enc_str(os.path.join(_base_dir, args.fail_log)), 'w', encoding)
 
     def log_success(self, track):
         self.success_tracks.append(track)
@@ -66,10 +63,8 @@ class PostActions(object):
             for track in tracks:
                 try:
                     track.load(self.args.timeout)
-                    if (len(track.artists) > 0 and track.artists[0].name
-                            is not None and track.name is not None):
-                        print_with_bullet(track.artists[0].name + " - " +
-                                          track.name)
+                    if (len(track.artists) > 0 and track.artists[0].name is not None and track.name is not None):
+                        print_with_bullet(track.artists[0].name + " - " + track.name)
                     else:
                         print_with_bullet(track.link.uri)
                 except spotify.Error as e:
@@ -77,14 +72,10 @@ class PostActions(object):
             print("")
 
         if len(self.success_tracks) > 0:
-            print(Fore.GREEN + "\nSuccess Summary (" +
-                  str(len(self.success_tracks)) +
-                  ")\n" + ("-" * 79) + Fore.RESET)
+            print(Fore.GREEN + "\nSuccess Summary (" + str(len(self.success_tracks)) + ")\n" + ("-" * 79) + Fore.RESET)
             log_tracks(self.success_tracks)
         if len(self.failure_tracks) > 0:
-            print(Fore.RED + "\nFailure Summary (" +
-                  str(len(self.failure_tracks)) +
-                  ")\n" + ("-" * 79) + Fore.RESET)
+            print(Fore.RED + "\nFailure Summary (" + str(len(self.failure_tracks)) + ")\n" + ("-" * 79) + Fore.RESET)
             log_tracks(self.failure_tracks)
 
     def get_chart_name(self, chart):
@@ -148,10 +139,7 @@ class PostActions(object):
             "tw": "Taiwan",
             "uy": "Uruguay"
         }
-        return (chart["time_window"].title() + " " +
-                region_mapping.get(chart["region"], "") + " " +
-                ("Top" if chart["metrics"] == "regional" else "Viral") + " " +
-                ("200" if chart["metrics"] == "regional" else "50"))
+        return (chart["time_window"].title() + " " + region_mapping.get(chart["region"], "") + " " + ("Top" if chart["metrics"] == "regional" else "Viral") + " " + ("200" if chart["metrics"] == "regional" else "50"))
 
     def get_playlist_name(self):
         ripper = self.ripper
@@ -173,11 +161,9 @@ class PostActions(object):
         if name is not None and args.playlist_m3u:
             name = sanitize_playlist_name(to_ascii(name))
             _base_dir = base_dir()
-            playlist_path = to_ascii(
-                os.path.join(_base_dir, name + '.m3u'))
+            playlist_path = to_ascii(os.path.join(_base_dir, name + '.m3u'))
 
-            print(Fore.GREEN + "Creating playlist m3u file " +
-                  playlist_path + Fore.RESET)
+            print(Fore.GREEN + "Creating playlist m3u file " + playlist_path + Fore.RESET)
 
             encoding = "ascii" if args.ascii else "utf-8"
             with codecs.open(enc_str(playlist_path), 'w', encoding) as playlist:
@@ -187,8 +173,7 @@ class PostActions(object):
                         continue
                     _file = ripper.format_track_path(idx, track)
                     if path_exists(_file):
-                        playlist.write(os.path.relpath(_file, _base_dir) +
-                                       "\n")
+                        playlist.write(os.path.relpath(_file, _base_dir) + "\n")
 
     def create_playlist_wpl(self, tracks):
         args = self.args
@@ -198,11 +183,9 @@ class PostActions(object):
         if name is not None and args.playlist_wpl:
             name = sanitize_playlist_name(to_ascii(name))
             _base_dir = base_dir()
-            playlist_path = to_ascii(
-                os.path.join(_base_dir, name + '.wpl'))
+            playlist_path = to_ascii(os.path.join(_base_dir, name + '.wpl'))
 
-            print(Fore.GREEN + "Creating playlist wpl file " +
-                  playlist_path + Fore.RESET)
+            print(Fore.GREEN + "Creating playlist wpl file " + playlist_path + Fore.RESET)
 
             encoding = "ascii" if args.ascii else "utf-8"
             with codecs.open(enc_str(playlist_path), 'w', encoding) as playlist:
@@ -219,14 +202,9 @@ class PostActions(object):
                 playlist.write('<?wpl version="1.0"?>\n')
                 playlist.write('<smil>\n')
                 playlist.write('\t<head>\n')
-                playlist.write('\t\t<meta name="Generator" '
-                               'content="Microsoft Windows Media Player -- '
-                               '12.0.7601.18526"/>\n')
-                playlist.write('\t\t<meta name="ItemCount" content="' +
-                               str(len(track_paths)) + '"/>\n')
-                playlist.write('\t\t<author>' +
-                               ripper.session.user.display_name +
-                               '</author>\n')
+                playlist.write('\t\t<meta name="Generator" ' 'content="Microsoft Windows Media Player -- ' '12.0.7601.18526"/>\n')
+                playlist.write('\t\t<meta name="ItemCount" content="' + str(len(track_paths)) + '"/>\n')
+                playlist.write('\t\t<author>' + ripper.session.user.display_name + '</author>\n')
                 playlist.write('\t\t<title>' + name + '</title>\n')
                 playlist.write('\t</head>\n')
                 playlist.write('\t<body>\n')
@@ -234,9 +212,7 @@ class PostActions(object):
                 for _file in track_paths:
                     _file.replace("&", "&amp;")
                     _file.replace("'", "&apos;")
-                    playlist.write('\t\t\t<media src="' +
-                                   os.path.relpath(_file, _base_dir) +
-                                   "\"/>\n")
+                    playlist.write('\t\t\t<media src="' + os.path.relpath(_file, _base_dir) + "\"/>\n")
                 playlist.write('\t\t</seq>\n')
                 playlist.write('\t</body>\n')
                 playlist.write('</smil>\n')
@@ -278,4 +254,3 @@ class PostActions(object):
             storage_path = os.path.join(storage_path, "Storage")
             if path_exists(storage_path):
                 shutil.rmtree(enc_str(storage_path))
-

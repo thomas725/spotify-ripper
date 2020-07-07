@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # coding=utf-8
 
 from setuptools import setup, find_packages
@@ -6,11 +6,9 @@ import os
 
 
 def create_default_dir():
-    default_dir = os.path.normpath(os.path.realpath(
-        (os.path.join(os.path.expanduser("~"), ".spotify-ripper"))))
+    default_dir = os.path.normpath(os.path.realpath((os.path.join(os.path.expanduser("~"), ".spotify-ripper"))))
     if not os.path.exists(default_dir):
-        print("Creating default settings directory: " +
-            default_dir)
+        print("Creating default settings directory: " + default_dir)
         os.makedirs(default_dir.encode("utf-8"))
 
 
@@ -35,7 +33,7 @@ setup(
 
     # Additional data
     package_data={
-        '': ['README.rst', 'LICENCE']
+        '': ['README.md', 'LICENSE']
     },
 
     # Requirements
@@ -49,26 +47,20 @@ setup(
     ],
 
     # Metadata
-    author='James Newell',
-    author_email='james.newell@gmail.com',
-    description='a small ripper for Spotify that rips Spotify URIs '
-                'to audio files',
+    author='Simone Caronni',
+    author_email='negativo17@gmail.com',
+    description='A small ripper for Spotify that rips Spotify URIs to media files',
     license='MIT',
     keywords="spotify ripper mp3 ogg vorbis flac opus acc mp4 m4a",
-    url='https://github.com/jrnewell/spotify-ripper',
-    download_url='https://github.com/jrnewell/spotify-ripper/tarball/2.10.5',
+    url='https://github.com/scaronni/spotify-ripper',
+    download_url='https://github.com/scaronni/spotify-ripper/tarball/2.13',
     classifiers=[
         'Topic :: Multimedia :: Sound/Audio',
         'Topic :: Multimedia :: Sound/Audio :: Capture/Recording',
         'License :: OSI Approved :: MIT License',
         'Environment :: Console',
-        "Intended Audience :: Developers",
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
     ],
-    #long_description=_read('README.rst'),
 )
 
 create_default_dir()

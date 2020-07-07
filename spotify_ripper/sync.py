@@ -42,9 +42,7 @@ class Sync(object):
 
         encoding = "ascii" if args.ascii else "utf-8"
         with codecs.open(enc_str(lib_path), 'w', encoding) as lib_file:
-            lib_file.write(
-                json.dumps(lib, ensure_ascii=args.ascii,
-                           indent=4, separators=(',', ': ')))
+            lib_file.write(json.dumps(lib, ensure_ascii=args.ascii, indent=4, separators=(',', ': ')))
 
     def load_sync_library(self, playlist):
         args = self.args
@@ -86,13 +84,10 @@ class Sync(object):
                 if uri in new_lib:
                     new_file_path = new_lib[uri]
                     if file_path != new_file_path:
-                        print(Fore.YELLOW  + "Renaming file:" + Fore.RESET +
-                              "\n  From: " + file_path + "\n  To:   " +
-                              new_file_path)
+                        print(Fore.YELLOW + "Renaming file:" + Fore.RESET + "\n  From: " + file_path + "\n  To:   " + new_file_path)
                         os.rename(enc_file_path, enc_str(new_file_path))
                 else:
-                    print(Fore.YELLOW + "Removing file: " + Fore.RESET +
-                          "\n " + file_path)
+                    print(Fore.YELLOW + "Removing file:" + Fore.RESET + "\n " + file_path)
                     os.remove(enc_file_path)
 
         # save new lib

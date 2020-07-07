@@ -12,7 +12,6 @@ import re
 import math
 import unicodedata
 
-
 #  since there is no class, use global var
 util_globals = {'args': None}
 
@@ -38,7 +37,7 @@ def print_str(_str):
     """print without newline"""
     if not get_args().has_log:
         if sys.version_info >= (3, 0):
-            print(_str, end = '', flush = True)
+            print(_str, end='', flush=True)
         else:
             sys.stdout.write(_str)
             sys.stdout.flush()
@@ -97,9 +96,7 @@ def rm_file(file_name):
     except OSError as e:
         # don't need to print a warning if the file doesn't exist
         if e.errno != errno.ENOENT:
-            print(
-                Fore.YELLOW + "Warning: error while trying to remove file " +
-                file_name + Fore.RESET)
+            print(Fore.YELLOW + "Warning: error while trying to remove file " + file_name + Fore.RESET)
             print(str(e))
 
 
@@ -180,20 +177,14 @@ def format_track_string(ripper, format_string, idx, track):
     album_browser = track.album.browse()
     album_browser.load(args.timeout)
 
-    track_artist = to_ascii(
-        escape_filename_part(track.artists[0].name))
-    track_artists = to_ascii(
-        escape_filename_part(", ".join(
-            [artist.name for artist in track.artists])))
+    track_artist = to_ascii(escape_filename_part(track.artists[0].name))
+    track_artists = to_ascii(escape_filename_part(", ".join([artist.name for artist in track.artists])))
     if len(track.artists) > 1:
-        featuring_artists = to_ascii(
-            escape_filename_part(", ".join(
-                [artist.name for artist in track.artists[1:]])))
+        featuring_artists = to_ascii(escape_filename_part(", ".join([artist.name for artist in track.artists[1:]])))
     else:
         featuring_artists = ""
 
-    album_artist = to_ascii(
-        escape_filename_part(current_album.artist.name))
+    album_artist = to_ascii(escape_filename_part(current_album.artist.name))
     album_artists_web = track_artists
 
     # only retrieve album_artist_web if it exists in the format string
@@ -201,8 +192,7 @@ def format_track_string(ripper, format_string, idx, track):
         artist_array = \
             ripper.web.get_artists_on_album(current_album.link.uri)
         if artist_array is not None:
-            album_artists_web = to_ascii(
-                escape_filename_part(", ".join(artist_array)))
+            album_artists_web = to_ascii(escape_filename_part(", ".join(artist_array)))
 
     album = to_ascii(escape_filename_part(track.album.name))
     track_name = to_ascii(escape_filename_part(track.name))
@@ -225,10 +215,8 @@ def format_track_string(ripper, format_string, idx, track):
         smart_num = track_num
 
     if current_playlist is not None:
-        playlist_name = to_ascii(
-            sanitize_playlist_name(current_playlist.name))
-        playlist_owner = to_ascii(
-            current_playlist.owner.display_name)
+        playlist_name = to_ascii(sanitize_playlist_name(current_playlist.name))
+        playlist_owner = to_ascii(current_playlist.owner.display_name)
     else:
         playlist_name = "No Playlist"
         playlist_owner = "No Playlist Owner"
@@ -236,8 +224,7 @@ def format_track_string(ripper, format_string, idx, track):
 
     # load copyright only if needed
     copyright = label = ""
-    if (format_string.find("{copyright}") >= 0 or
-            format_string.find("{label}") >= 0):
+    if (format_string.find("{copyright}") >= 0 or format_string.find("{label}") >= 0):
         album_browser = track.album.browse()
         album_browser.load(args.timeout)
         if len(album_browser.copyrights) > 0:
@@ -250,8 +237,7 @@ def format_track_string(ripper, format_string, idx, track):
             format_string.find("{creator}") >= 0:
         pl_track = get_playlist_track(track, current_playlist)
         if pl_track is not None:
-            create_time = datetime.fromtimestamp(
-                    pl_track.create_time).strftime('%Y-%m-%d %H:%M:%S')
+            create_time = datetime.fromtimestamp(pl_track.create_time).strftime('%Y-%m-%d %H:%M:%S')
             creator = pl_track.creator.display_name
 
     tags = {
@@ -297,9 +283,7 @@ def format_track_string(ripper, format_string, idx, track):
         "track_uri": track_uri,
         "uri": track_uri
     }
-    fill_tags = {"idx", "index", "track_num", "track_idx",
-                 "track_index", "disc_num", "disc_idx", "disc_index",
-                 "smart_track_num", "smart_track_idx", "smart_track_index"}
+    fill_tags = {"idx", "index", "track_num", "track_idx", "track_index", "disc_num", "disc_idx", "disc_index", "smart_track_num", "smart_track_idx", "smart_track_index"}
     prefix_tags = {"feat_artists", "featuring_artists"}
     paren_tags = {"track_name", "track"}
     for tag in tags.keys():
@@ -322,8 +306,7 @@ def format_track_string(ripper, format_string, idx, track):
                     format_string = format_string[:match.start()] + tokens[1] + \
                         " " + tags[tag] + format_string[match.end():]
             else:
-                match = re.search(r"\s*\{" + tag +
-                                  r":[^\}]+\}", format_string)
+                match = re.search(r"\s*\{" + tag + r":[^\}]+\}", format_string)
                 if match:
                     format_string = format_string[:match.start()] + \
                                  format_string[match.end():]
@@ -354,6 +337,7 @@ def format_track_string(ripper, format_string, idx, track):
 
 # returns path of executable
 def which(program):
+
     def is_exe(fpath):
         return os.path.isfile(fpath) and os.access(enc_str(fpath), os.X_OK)
 
@@ -430,6 +414,7 @@ def format_size(size, short=False):
             str_value = str_value[:3]
         return "{0:>3s}{1}".format(str_value, suffix)
 
+
 # returns true if audio_file is a partial of track
 def is_partial(audio_file, track):
     args = get_args()
@@ -447,11 +432,9 @@ def is_partial(audio_file, track):
 
     # for 'weak', give a ~1.5 second wiggle-room
     if (args.partial_check == "strict"):
-        return (audio_file_dur is None or
-            track.duration > (audio_file_dur * 1000))
+        return (audio_file_dur is None or track.duration > (audio_file_dur * 1000))
     else:
-        return (audio_file_dur is not None and
-            (track.duration - 1500) > (audio_file_dur * 1000))
+        return (audio_file_dur is not None and (track.duration - 1500) > (audio_file_dur * 1000))
 
 
 # borrowed from eyeD3
@@ -510,7 +493,5 @@ def format_time(seconds, total=None, short=False):
             unit1, limit1 = units[i]
             unit2, limit2 = units[i + 1]
             if seconds >= limit1:
-                return u'{0:02d}{1} {2:02d}{3}'.format(
-                    seconds // limit1, unit1,
-                    (seconds % limit1) // limit2, unit2)
+                return u'{0:02d}{1} {2:02d}{3}'.format(seconds // limit1, unit1, (seconds % limit1) // limit2, unit2)
         return u'  ~inf'

@@ -14,14 +14,10 @@ import base64
 
 def set_metadata_tags(args, audio_file, idx, track, ripper):
     # log completed file
-    print(Fore.GREEN + Style.BRIGHT + os.path.basename(audio_file) +
-          Style.NORMAL + "\t[ " +
-          format_size(os.stat(enc_str(audio_file))[ST_SIZE]) + " ]" +
-          Fore.RESET)
+    print(Fore.GREEN + Style.BRIGHT + os.path.basename(audio_file) + Style.NORMAL + "\t[ " + format_size(os.stat(enc_str(audio_file))[ST_SIZE]) + " ]" + Fore.RESET)
 
     if args.output_type == "wav" or args.output_type == "pcm":
-        print(Fore.YELLOW + "Skipping metadata tagging for " +
-              args.output_type + " encoding...")
+        print(Fore.YELLOW + "Skipping metadata tagging for " + args.output_type + " encoding...")
         return
 
     # ensure everything is loaded still
@@ -36,8 +32,7 @@ def set_metadata_tags(args, audio_file, idx, track, ripper):
     num_discs = 0
     num_tracks = 0
     for track_browse in album_browser.tracks:
-        if (track_browse.disc == track.disc and
-                track_browse.index > track.index):
+        if (track_browse.disc == track.disc and track_browse.index > track.index):
             num_tracks = track_browse.index
         if track_browse.disc > num_discs:
             num_discs = track_browse.disc
@@ -95,6 +90,7 @@ def set_metadata_tags(args, audio_file, idx, track, ripper):
 
         def save_cover_image(embed_image_func):
             if image is not None:
+
                 def write_image(file_name):
                     cover_path = os.path.dirname(audio_file)
                     cover_file = os.path.join(cover_path, file_name)
@@ -115,49 +111,23 @@ def set_metadata_tags(args, audio_file, idx, track, ripper):
             audio.add_tags()
 
             def embed_image(data):
-                audio.tags.add(
-                    id3.APIC(
-                        encoding=3,
-                        mime='image/jpeg',
-                        type=3,
-                        desc='Front Cover',
-                        data=data
-                    )
-                )
+                audio.tags.add(id3.APIC(encoding=3, mime='image/jpeg', type=3, desc='Front Cover', data=data))
 
             save_cover_image(embed_image)
 
             if album is not None:
-                audio.tags.add(
-                    id3.TALB(text=[tag_to_ascii(track.album.name, album)],
-                             encoding=3))
-            audio.tags.add(
-                id3.TIT2(text=[tag_to_ascii(track.name, title)],
-                         encoding=3))
-            audio.tags.add(
-                id3.TPE1(text=[tag_to_ascii(artists, artists_ascii)],
-                         encoding=3))
+                audio.tags.add(id3.TALB(text=[tag_to_ascii(track.album.name, album)], encoding=3))
+            audio.tags.add(id3.TIT2(text=[tag_to_ascii(track.name, title)], encoding=3))
+            audio.tags.add(id3.TPE1(text=[tag_to_ascii(artists, artists_ascii)], encoding=3))
             if album_artist is not None:
-                audio.tags.add(
-                    id3.TPE2(text=[tag_to_ascii(
-                                       track.album.artist.name, album_artist)],
-                             encoding=3))
-            audio.tags.add(id3.TDRC(text=[str(track.album.year)],
-                                    encoding=3))
-            audio.tags.add(
-                id3.TPOS(text=[idx_of_total_str(track.disc, num_discs)],
-                         encoding=3))
-            audio.tags.add(
-                id3.TRCK(text=[idx_of_total_str(track.index, num_tracks)],
-                         encoding=3))
+                audio.tags.add(id3.TPE2(text=[tag_to_ascii(track.album.artist.name, album_artist)], encoding=3))
+            audio.tags.add(id3.TDRC(text=[str(track.album.year)], encoding=3))
+            audio.tags.add(id3.TPOS(text=[idx_of_total_str(track.disc, num_discs)], encoding=3))
+            audio.tags.add(id3.TRCK(text=[idx_of_total_str(track.index, num_tracks)], encoding=3))
             if args.comment is not None:
-                audio.tags.add(
-                    id3.COMM(text=[tag_to_ascii(comment, comment_ascii)],
-                             encoding=3))
+                audio.tags.add(id3.COMM(text=[tag_to_ascii(comment, comment_ascii)], encoding=3))
             if args.grouping is not None:
-                audio.tags.add(
-                    id3.TIT1(text=[tag_to_ascii(grouping, grouping_ascii)],
-                             encoding=3))
+                audio.tags.add(id3.TIT1(text=[tag_to_ascii(grouping, grouping_ascii)], encoding=3))
             if genres is not None and genres:
                 tcon_tag = id3.TCON(encoding=3)
                 tcon_tag.genres = genres if args.ascii_path_only \
@@ -179,49 +149,23 @@ def set_metadata_tags(args, audio_file, idx, track, ripper):
                 id3_dict = id3.ID3()
 
             def embed_image(data):
-                id3_dict.add(
-                    id3.APIC(
-                        encoding=3,
-                        mime='image/jpeg',
-                        type=3,
-                        desc='Front Cover',
-                        data=data
-                    )
-                )
+                id3_dict.add(id3.APIC(encoding=3, mime='image/jpeg', type=3, desc='Front Cover', data=data))
 
             save_cover_image(embed_image)
 
             if album is not None:
-                id3_dict.add(
-                    id3.TALB(text=[tag_to_ascii(track.album.name, album)],
-                             encoding=3))
-            id3_dict.add(
-                id3.TIT2(text=[tag_to_ascii(track.name, title)],
-                         encoding=3))
-            id3_dict.add(
-                id3.TPE1(text=[tag_to_ascii(artists, artists_ascii)],
-                         encoding=3))
+                id3_dict.add(id3.TALB(text=[tag_to_ascii(track.album.name, album)], encoding=3))
+            id3_dict.add(id3.TIT2(text=[tag_to_ascii(track.name, title)], encoding=3))
+            id3_dict.add(id3.TPE1(text=[tag_to_ascii(artists, artists_ascii)], encoding=3))
             if album_artist is not None:
-                id3_dict.add(
-                    id3.TPE2(text=[tag_to_ascii(
-                                       track.album.artist.name, album_artist)],
-                             encoding=3))
-            id3_dict.add(id3.TDRC(text=[str(track.album.year)],
-                                  encoding=3))
-            id3_dict.add(
-                id3.TPOS(text=[idx_of_total_str(track.disc, num_discs)],
-                         encoding=3))
-            id3_dict.add(
-                id3.TRCK(text=[idx_of_total_str(track.index, num_tracks)],
-                         encoding=3))
+                id3_dict.add(id3.TPE2(text=[tag_to_ascii(track.album.artist.name, album_artist)], encoding=3))
+            id3_dict.add(id3.TDRC(text=[str(track.album.year)], encoding=3))
+            id3_dict.add(id3.TPOS(text=[idx_of_total_str(track.disc, num_discs)], encoding=3))
+            id3_dict.add(id3.TRCK(text=[idx_of_total_str(track.index, num_tracks)], encoding=3))
             if args.comment is not None:
-                id3_dict.add(
-                    id3.COMM(text=[tag_to_ascii(comment, comment_ascii)],
-                             encoding=3))
+                id3_dict.add(id3.COMM(text=[tag_to_ascii(comment, comment_ascii)], encoding=3))
             if args.grouping is not None:
-                audio.tags.add(
-                    id3.TIT1(text=[tag_to_ascii(grouping, grouping_ascii)],
-                             encoding=3))
+                audio.tags.add(id3.TIT1(text=[tag_to_ascii(grouping, grouping_ascii)], encoding=3))
             if genres is not None and genres:
                 tcon_tag = id3.TCON(encoding=3)
                 tcon_tag.genres = genres if args.ascii_path_only \
@@ -326,8 +270,7 @@ def set_metadata_tags(args, audio_file, idx, track, ripper):
             audio[b"\xa9nam"] = tag_to_ascii(track.name, title)
             audio.tags[b"\xa9ART"] = tag_to_ascii(artists, artists_ascii)
             if album_artist is not None:
-                audio.tags[str("aART")] = tag_to_ascii(
-                    track.album.artist.name, album_artist)
+                audio.tags[str("aART")] = tag_to_ascii(track.album.artist.name, album_artist)
             audio.tags[b"\xa9day"] = str(track.album.year)
             audio.tags[str("disk")] = (track.disc, num_discs)
             audio.tags[str("trkn")] = (track.index, num_tracks)
@@ -411,126 +354,69 @@ def set_metadata_tags(args, audio_file, idx, track, ripper):
         if album is not None:
             print(Fore.YELLOW + "Setting album: " + album + Fore.RESET)
         if album_artist is not None:
-            print(Fore.YELLOW + "Setting album artist: " + album_artist +
-                  Fore.RESET)
+            print(Fore.YELLOW + "Setting album artist: " + album_artist + Fore.RESET)
         print(Fore.YELLOW + "Setting title: " + title + Fore.RESET)
-        print(Fore.YELLOW + "Setting track info: (" +
-              str(track.index) + ", " + str(num_tracks) + ")" + Fore.RESET)
-        print(Fore.YELLOW + "Setting disc info: (" + str(track.disc) +
-              ", " + str(num_discs) + ")" + Fore.RESET)
-        print(Fore.YELLOW + "Setting release year: " +
-              str(track.album.year) + Fore.RESET)
+        print(Fore.YELLOW + "Setting track info: (" + str(track.index) + ", " + str(num_tracks) + ")" + Fore.RESET)
+        print(Fore.YELLOW + "Setting disc info: (" + str(track.disc) + ", " + str(num_discs) + ")" + Fore.RESET)
+        print(Fore.YELLOW + "Setting release year: " + str(track.album.year) + Fore.RESET)
         if genres is not None and genres:
-            print(Fore.YELLOW + "Setting genres: " +
-                  " / ".join(genres_ascii) + Fore.RESET)
+            print(Fore.YELLOW + "Setting genres: " + " / ".join(genres_ascii) + Fore.RESET)
         if image is not None:
             print(Fore.YELLOW + "Adding cover image" + Fore.RESET)
         if args.comment is not None:
-            print(Fore.YELLOW + "Adding comment: " + comment_ascii +
-                  Fore.RESET)
+            print(Fore.YELLOW + "Adding comment: " + comment_ascii + Fore.RESET)
         if args.grouping is not None:
-            print(Fore.YELLOW + "Adding grouping: " + grouping_ascii +
-                  Fore.RESET)
+            print(Fore.YELLOW + "Adding grouping: " + grouping_ascii + Fore.RESET)
         if args.output_type == "flac":
-            bit_rate = ((audio.info.bits_per_sample * audio.info.sample_rate) *
-                        audio.info.channels)
-            print("Time: " + format_time(audio.info.length) +
-                  "\tFree Lossless Audio Codec" +
-                  "\t[ " + bit_rate_str(bit_rate / 1000) + " @ " +
-                  str(audio.info.sample_rate) +
-                  " Hz - " + channel_str(audio.info.channels) + " ]")
+            bit_rate = ((audio.info.bits_per_sample * audio.info.sample_rate) * audio.info.channels)
+            print("Time: " + format_time(audio.info.length) + "\tFree Lossless Audio Codec" + "\t[ " + bit_rate_str(bit_rate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels) + " ]")
             print("-" * 79)
-            print(Fore.YELLOW + "Writing Vorbis comments - " +
-                  audio.tags.vendor + Fore.RESET)
+            print(Fore.YELLOW + "Writing Vorbis comments - " + audio.tags.vendor + Fore.RESET)
             print("-" * 79)
         if args.output_type == "aiff":
-            print("Time: " + format_time(audio.info.length) +
-                  "\tAudio Interchange File Format" +
-                  "\t[ " + bit_rate_str(audio.info.bitrate / 1000) + " @ " +
-                  str(audio.info.sample_rate) +
-                  " Hz - " + channel_str(audio.info.channels) + " ]")
+            print("Time: " + format_time(audio.info.length) + "\tAudio Interchange File Format" + "\t[ " + bit_rate_str(audio.info.bitrate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels) + " ]")
             print("-" * 79)
-            id3_version = "v%d.%d" % (
-                audio.tags.version[0], audio.tags.version[1])
-            print("ID3 " + id3_version + ": " +
-                  str(len(audio.tags.values())) + " frames")
-            print(
-                Fore.YELLOW + "Writing ID3 version " +
-                id3_version + Fore.RESET)
+            id3_version = "v%d.%d" % (audio.tags.version[0], audio.tags.version[1])
+            print("ID3 " + id3_version + ": " + str(len(audio.tags.values())) + " frames")
+            print(Fore.YELLOW + "Writing ID3 version " + id3_version + Fore.RESET)
             print("-" * 79)
         if args.output_type == "alac.m4a":
-            bit_rate = ((audio.info.bits_per_sample * audio.info.sample_rate) *
-                        audio.info.channels)
-            print("Time: " + format_time(audio.info.length) +
-                  "\tApple Lossless" +
-                  "\t[ " + bit_rate_str(bit_rate / 1000) + " @ " +
-                  str(audio.info.sample_rate) +
-                  " Hz - " + channel_str(audio.info.channels) + " ]")
+            bit_rate = ((audio.info.bits_per_sample * audio.info.sample_rate) * audio.info.channels)
+            print("Time: " + format_time(audio.info.length) + "\tApple Lossless" + "\t[ " + bit_rate_str(bit_rate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels) + " ]")
             print("-" * 79)
-            print(Fore.YELLOW + "Writing Apple iTunes metadata - " +
-                  Fore.RESET)
+            print(Fore.YELLOW + "Writing Apple iTunes metadata - " + Fore.RESET)
             print("-" * 79)
         elif args.output_type == "ogg":
-            print("Time: " + format_time(audio.info.length) +
-                  "\tOgg Vorbis Codec" +
-                  "\t[ " + bit_rate_str(audio.info.bitrate / 1000) + " @ " +
-                  str(audio.info.sample_rate) +
-                  " Hz - " + channel_str(audio.info.channels) + " ]")
+            print("Time: " + format_time(audio.info.length) + "\tOgg Vorbis Codec" + "\t[ " + bit_rate_str(audio.info.bitrate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels) + " ]")
             print("-" * 79)
-            print(Fore.YELLOW + "Writing Vorbis comments - " +
-                  audio.tags.vendor + Fore.RESET)
+            print(Fore.YELLOW + "Writing Vorbis comments - " + audio.tags.vendor + Fore.RESET)
             print("-" * 79)
         elif args.output_type == "opus":
-            print("Time: " + format_time(audio.info.length) + "\tOpus Codec" +
-                  "\t[ " + channel_str(audio.info.channels) + " ]")
+            print("Time: " + format_time(audio.info.length) + "\tOpus Codec" + "\t[ " + channel_str(audio.info.channels) + " ]")
             print("-" * 79)
-            print(Fore.YELLOW + "Writing Vorbis comments - " +
-                  audio.tags.vendor + Fore.RESET)
+            print(Fore.YELLOW + "Writing Vorbis comments - " + audio.tags.vendor + Fore.RESET)
             print("-" * 79)
         elif args.output_type == "mp3":
-            print("Time: " + format_time(audio.info.length) + "\tMPEG" +
-                  str(audio.info.version) +
-                  ", Layer " + ("I" * audio.info.layer) + "\t[ " +
-                  bit_rate_str(audio.info.bitrate / 1000) +
-                  " @ " + str(audio.info.sample_rate) + " Hz - " +
+            print("Time: " + format_time(audio.info.length) + "\tMPEG" + str(audio.info.version) + ", Layer " + ("I" * audio.info.layer) + "\t[ " + bit_rate_str(audio.info.bitrate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " +
                   mode_str(audio.info.mode) + " ]")
             print("-" * 79)
-            id3_version = "v%d.%d" % (
-                audio.tags.version[0], audio.tags.version[1])
-            print("ID3 " + id3_version + ": " +
-                  str(len(audio.tags.values())) + " frames")
-            print(
-                Fore.YELLOW + "Writing ID3 version " +
-                id3_version + Fore.RESET)
+            id3_version = "v%d.%d" % (audio.tags.version[0], audio.tags.version[1])
+            print("ID3 " + id3_version + ": " + str(len(audio.tags.values())) + " frames")
+            print(Fore.YELLOW + "Writing ID3 version " + id3_version + Fore.RESET)
             print("-" * 79)
         elif args.output_type == "aac":
-            print("Time: " + format_time(audio.info.length) +
-                  "\tAdvanced Audio Coding" +
-                  "\t[ " + bit_rate_str(audio.info.bitrate / 1000) +
-                  " @ " + str(audio.info.sample_rate) + " Hz - " +
-                  channel_str(audio.info.channels) + " ]")
+            print("Time: " + format_time(audio.info.length) + "\tAdvanced Audio Coding" + "\t[ " + bit_rate_str(audio.info.bitrate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels) + " ]")
             print("-" * 79)
-            id3_version = "v%d.%d" % (
-                audio.tags.version[0], audio.tags.version[1])
-            print("ID3 " + id3_version + ": " +
-                  str(len(audio.tags.values())) + " frames")
-            print(
-                Fore.YELLOW + "Writing ID3 version " +
-                id3_version + Fore.RESET)
+            id3_version = "v%d.%d" % (audio.tags.version[0], audio.tags.version[1])
+            print("ID3 " + id3_version + ": " + str(len(audio.tags.values())) + " frames")
+            print(Fore.YELLOW + "Writing ID3 version " + id3_version + Fore.RESET)
             print("-" * 79)
         elif args.output_type == "m4a":
-            bit_rate = ((audio.info.bits_per_sample * audio.info.sample_rate) *
-                        audio.info.channels)
-            print("Time: " + format_time(audio.info.length) +
-                  "\tMPEG-4 Part 14 Audio" +
-                  "\t[ " + bit_rate_str(bit_rate / 1000) +
-                  " @ " + str(audio.info.sample_rate) + " Hz - " +
-                  channel_str(audio.info.channels) + " ]")
+            bit_rate = ((audio.info.bits_per_sample * audio.info.sample_rate) * audio.info.channels)
+            print("Time: " + format_time(audio.info.length) + "\tMPEG-4 Part 14 Audio" + "\t[ " + bit_rate_str(bit_rate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels) + " ]")
             print("-" * 79)
-            print(Fore.YELLOW + "Writing Apple iTunes metadata - " +
-                  str(audio.info.codec) + Fore.RESET)
+            print(Fore.YELLOW + "Writing Apple iTunes metadata - " + str(audio.info.codec) + Fore.RESET)
             print("-" * 79)
 
     except id3.error:
-        print(Fore.YELLOW + "Warning: exception while saving id3 tag: " +
-              str(id3.error) + Fore.RESET)
+        print(Fore.YELLOW + "Warning: exception while saving id3 tag: " + str(id3.error) + Fore.RESET)

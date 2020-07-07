@@ -17,14 +17,11 @@ except ImportError:
 
 import spotify
 
-
 __all__ = [
     'EventLoop',
 ]
 
-
 class EventLoop(threading.Thread):
-
     """Event loop for automatically processing events from libspotify.
 
     The event loop is a :class:`~threading.Thread` that listens to
@@ -60,17 +57,13 @@ class EventLoop(threading.Thread):
 
     def start(self):
         """Start the event loop."""
-        self._session.on(
-            spotify.SessionEvent.NOTIFY_MAIN_THREAD,
-            self._on_notify_main_thread)
+        self._session.on(spotify.SessionEvent.NOTIFY_MAIN_THREAD, self._on_notify_main_thread)
         threading.Thread.start(self)
 
     def stop(self):
         """Stop the event loop."""
         self._runnable = False
-        self._session.off(
-            spotify.SessionEvent.NOTIFY_MAIN_THREAD,
-            self._on_notify_main_thread)
+        self._session.off(spotify.SessionEvent.NOTIFY_MAIN_THREAD, self._on_notify_main_thread)
 
     def run(self):
         timeout_countdown = self._session.process_events()
@@ -96,6 +89,4 @@ class EventLoop(threading.Thread):
         try:
             self._queue.put_nowait(1)
         except queue.Full:
-            print(Fore.RED +
-                  "event loop queue full. dropped notification event" +
-                  Fore.RESET)
+            print(Fore.RED + "event loop queue full. dropped notification event" + Fore.RESET)

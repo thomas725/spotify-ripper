@@ -14,5 +14,4 @@ Classifier: Topic :: Multimedia :: Sound/Audio
 Classifier: Topic :: Multimedia :: Sound/Audio :: Capture/Recording
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Environment :: Console
-Classifier: Intended Audience :: Developers
 Classifier: Programming Language :: Python :: 3

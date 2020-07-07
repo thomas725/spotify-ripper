@@ -112,28 +112,21 @@ class Progress(object):
                     self.ema_rate = calc_rate(rate, self.ema_rate, 0.005)
 
                     # calc song eta
-                    self.song_eta = calc(
-                        self.song_position, self.song_duration,
-                        self.ema_rate, self.song_eta)
+                    self.song_eta = calc(self.song_position, self.song_duration, self.ema_rate, self.song_eta)
 
                     # calc total eta
                     if self.show_total:
-                        total_position = (
-                            self.total_position + self.song_position)
-                        self.total_eta = calc(
-                            total_position, self.total_duration,
-                            self.ema_rate, self.total_eta)
+                        total_position = (self.total_position + self.song_position)
+                        self.total_eta = calc(total_position, self.total_duration, self.ema_rate, self.total_eta)
 
             self.stat_prev = (self.song_position, time.time())
 
     def handle_resize(self, signum=None, frame=None):
         try:
-            _to_ascii = lambda s: s.encode(
-                "ascii", "ignore") if sys.version_info < (3, 0) else s
+            _to_ascii = lambda s: s.encode("ascii", "ignore") if sys.version_info < (3, 0) else s
             h = _to_ascii("h")
             null_str = _to_ascii("\0" * 8)
-            h, w = array(
-                h, ioctl(sys.stdout, termios.TIOCGWINSZ, null_str))[:2]
+            h, w = array(h, ioctl(sys.stdout, termios.TIOCGWINSZ, null_str))[:2]
             self.term_width = w
         except (NameError, IOError):
             self.term_width = int(os.environ.get('COLUMNS', 120)) - 1
@@ -195,11 +188,7 @@ class Progress(object):
                 self.move_cursor = True
 
         # song output text
-        output_strings = [
-            "Progress:",
-            " [" + ("=" * x) + (" " * (prog_width - x)) + "]",
-            " " + format_time(pos_seconds, dur_seconds)
-        ]
+        output_strings = ["Progress:", " [" + ("=" * x) + (" " * (prog_width - x)) + "]", " " + format_time(pos_seconds, dur_seconds)]
         if self.song_eta is not None:
             _spaces = max(22 - len(output_strings[2]), 1) * " "
             output_strings.append(_spaces)
@@ -219,12 +208,7 @@ class Progress(object):
             total_x = int(total_pct * prog_width // 100)
 
             # total output text
-            output_strings = [
-                "Total:",
-                "    [" + ("=" * total_x) +
-                (" " * (prog_width - total_x)) + "]",
-                " " + format_time(total_pos_seconds, total_dur_seconds)
-            ]
+            output_strings = ["Total:", "    [" + ("=" * total_x) + (" " * (prog_width - total_x)) + "]", " " + format_time(total_pos_seconds, total_dur_seconds)]
             if self.total_eta is not None:
                 _spaces = max(22 - len(output_strings[2]), 1) * " "
                 output_strings.append(_spaces)
