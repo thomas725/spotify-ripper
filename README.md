@@ -1,24 +1,35 @@
 # spotify-ripper
 
-A fork of `spotify-ripper` (https://github.com/wolfmanx/spotify-ripper). Spotify-ripper is a small ripper script for Spotify that rips Spotify URIs to audio files with metadata and cover art. By default `spotify-ripper` will encode to MP3 files, but includes the ability to rip to WAV, FLAC, Ogg Vorbis, Opus, AAC, and MP4/M4A.
+`spotify-ripper` is a small ripper program for Spotify that rips Spotify URIs to audio files with metadata and cover art. By default `spotify-ripper` will encode to MP3 files, but includes the ability to rip to WAV, FLAC, Ogg Vorbis, Opus, AAC, and MP4/M4A.
 
-**Note that stream ripping violates the libspotify's ToS**
+**Note that stream ripping violates Spotify's ToS**
 
-Make sure you export the web api credentials in your unix shell:
+## Spotify Web API
+
+To generate your Spotify Client ID and Secret, access the [developer dashboard page](https://developer.spotify.com/dashboard/applications) and create a new application. As a redirect URI, add localhost and a port, so that [Spotipy](https://spotipy.readthedocs.io/) can parse it automatically.
+
+Make sure you export the web api credentials and redirect URI in your unix shell:
 
 ```
 export SPOTIPY_CLIENT_ID='77aa1aa93dc0416397f22a7a9b4a815b'
 export SPOTIPY_CLIENT_SECRET='0d79181c57ee412aaa770af257edf07a'
-export SPOTIPY_REDIRECT_URI='http://www.purple.com'
+export SPOTIPY_REDIRECT_URI='http://localhost:8000/'
 ```
 
-## Libspotify’s Deprecation
+At the first attempt to use the ripper against a playlist, a browser window with a Spotify login will open. Login, and the ripper parses automatically the returning OAuth redirect.
+
+A couple notes about Spotify's WebAPI token authentication:
+- The token is stored in a file named `.profile-<username>`.
+- The authentication token is stored where the script is executed from, so if you're in your home directory and execute a script thats in `/usr/bin` it will be stored in your home directory.
+- If you are running this in a script or other form of automation, you'll have to manually authenticate once but after that as long as you always execute it from the same location you won't have to authenticate again.
+
+### Deprecation of `libspotify`
 
 As of May 2015 `libspotify` is officially deprecated by Spotify and is no longer actively maintained. As of Jan 2016 Spotify does no longer issue developer keys.
 
 Spotify has published newer libraries intended for Android and iOS development, as well as web APIs to access track metadata and manage playlists. Though, for making apps with Spotify playback capabilities, on any other platform than Android and iOS, there is currently no alternative to libspotify.
 
-### Features
+## Features
 
 -  Real-time VBR or CBR ripping from Spotify PCM stream
 -  Writes ID3v2/metadata tags (including album covers)
@@ -49,14 +60,16 @@ Spotify has published newer libraries intended for Android and iOS development, 
 Takes many command-line options:
 
 ```
-usage: spotify-ripper [-h] [-S SETTINGS] [-a] [--aac] [--aiff] [--alac] [--all-artists] [--artist-album-type ARTIST_ALBUM_TYPE] [--artist-album-market ARTIST_ALBUM_MARKET] [-A] [-b BITRATE] [-c] [--comp COMP] [--comment COMMENT]
-                      [--cover-file COVER_FILE] [--cover-file-and-embed COVER_FILE] [-d DIRECTORY] [--fail-log FAIL_LOG] [--flac] [-f FORMAT] [--format-case {upper,lower,capitalize}] [--flat] [--flat-with-index] [-g {artist,album}]
-                      [--grouping GROUPING] [--id3-v23] [-k KEY] [-u USER] [-p PASSWORD] [--large-cover-art] [-l] [-L LOG] [--pcm] [--mp4] [--normalize] [-na] [-o] [--opus] [--partial-check {none,weak,strict}] [--play-token-resume RESUME_AFTER]
-                      [--playlist-m3u] [--playlist-wpl] [--playlist-sync] [--plus-pcm] [--plus-wav] [-q VBR] [-Q {160,320,96}] [--remove-offline-cache] [--resume-after RESUME_AFTER] [-R REPLACE [REPLACE ...]] [-s] [--stereo-mode {j,s,f,d,m,l,r}]
-                      [--stop-after STOP_AFTER] [--timeout TIMEOUT] [-V] [--wav] [--windows-safe] [--vorbis] [-r]
+usage: spotify-ripper [-h] [-S SETTINGS] [-a] [--aac] [--aiff] [--alac] [--all-artists] [--artist-album-type ARTIST_ALBUM_TYPE] [--artist-album-market ARTIST_ALBUM_MARKET] [-A]
+                      [-b BITRATE] [-c] [--comp COMP] [--comment COMMENT] [--cover-file COVER_FILE] [--cover-file-and-embed COVER_FILE] [-d DIRECTORY] [--fail-log FAIL_LOG] [--flac]
+                      [-f FORMAT] [--format-case {upper,lower,capitalize}] [--flat] [--flat-with-index] [-g {artist,album}] [--grouping GROUPING] [--id3-v23] [-k KEY] [-u USER]
+                      [-p PASSWORD] [--large-cover-art] [-l] [-L LOG] [--pcm] [--mp4] [--normalize] [-na] [-o] [--opus] [--partial-check {none,weak,strict}]
+                      [--play-token-resume RESUME_AFTER] [--playlist-m3u] [--playlist-wpl] [--playlist-sync] [--plus-pcm] [--plus-wav] [-q VBR] [-Q {160,320,96}] [--remove-offline-cache]
+                      [--resume-after RESUME_AFTER] [-R REPLACE [REPLACE ...]] [-s] [--stereo-mode {j,s,f,d,m,l,r}] [--stop-after STOP_AFTER] [--timeout TIMEOUT] [-V] [--wav]
+                      [--windows-safe] [--vorbis] [-r]
                       uri [uri ...]
 
-Rips Spotify URIs to MP3s with ID3 tags and album covers
+Rips Spotify URIs to media files with tags and album covers
 
 positional arguments:
   uri                   One or more Spotify URI(s) (either URI, a file of URIs or a search query)
@@ -142,19 +155,20 @@ optional arguments:
   --windows-safe        Make filename safe for Windows file system (truncate filename to 255 characters)
   --vorbis              Rip songs to Ogg Vorbis encoding instead of MP3
   -r, --remove-from-playlist
-                        [WARNING: SPOTIFY IS NOT PROPROGATING PLAYLIST CHANGES TO THEIR SERVERS] Delete tracks from playlist after successful ripping [Default=no]
+                        Delete tracks from playlist after successful ripping [Default=no]
 
 Example usage:
-    rip a single file: spotify-ripper -u user spotify:track:52xaypL0Kjzk0ngwv3oBPR
-    rip entire playlist: spotify-ripper -u user spotify:user:username:playlist:4vkGNcsS8lRXj4q945NIA4
-    rip a list of URIs: spotify-ripper -u user list_of_uris.txt
+    rip a single file: spotify-ripper -u <username> spotify:track:52xaypL0Kjzk0ngwv3oBPR
+    rip entire playlist: spotify-ripper -u <username> spotify:user:<username>:playlist:4vkGNcsS8lRXj4q945NIA4
+    rip a list of URIs: spotify-ripper -u <username> -p <password> list_of_uris.txt
+    rip a list of URIs using last login: spotify-ripper -l list_of_uris.txt
     rip tracks from Spotify's charts: spotify-ripper -l spotify:charts:regional:global:weekly:latest
     search for tracks to rip: spotify-ripper -l -Q 160 -o "album:Rumours track:'the chain'"
 ```
 
 ### Facebook Login
 
-`spotify-ripper` will work with your regular Facebook login/password if you setup your Spotify account to login using your Facebook credentials.  Otherwise, use your Spotify login/password.
+`spotify-ripper` will work with your regular Facebook login/password if you setup your Spotify account to login using your Facebook credentials. Otherwise, use your Spotify login/password.
 
 ### Config File
 
@@ -222,26 +236,6 @@ By default, other than checking for an overwrite, `spotify-ripper` will not keep
 If at a later time, the playlist is changed on Spotify (i.e. songs reordered, removed or added), `spotify-ripper` will try to keep your local files "in sync" the playlist if you rerun the same command.  For example, if your format string is `{index} {artist} - {track_name}.{ext}`, it will rename is existing files so the index is correct. Note that with option set, `spotify-ripper` will delete a song that was previously on the playlist, but was removed but still exists on your local machine.  It does not affect files outside of the playlist and has no effect on non-playlist URIs.
 
 If you want to redownload a playlist (for example with improved quality), you either need to remove the song files from your local or use the `--overwrite` option.
-
-### Remove From Playlist Option
-
-Since the work around to remove songs from a playlist uses the Spotify Web API, to enable `--remove-from-playlist` you must go through a few steps
-
-1. Make an application at https://developer.spotify.com/dashboard/applications and name it whatever you like.
-1. Generate and store you `CLIENT ID` and `CLIENT SECRET`, you'll need these later.
-1. Add http://www.purple.com to your applications Redirect URI's, make sure to click the green "ADD" button to the right of the field before pressing SAVE. I am not affiliated with www.purple.com, I just like what they do. If you want to use a different URI, ensure it doesn't use https and change the `redirect_uri` in `remove_all_from_playlist.py`.
-1. Press the "SAVE" button at the bottom of the page.
-1. Open `spotify_ripper/remove_all_from_playlist.py` in your favorite text editor. Add your client_id and client_secret between the single quotes next to the variables named the same thing.
-1. If you have been using `spotify-ripper` for a while, it probably doesn't have accurate cache data on your playlists anymore. Find your `.spotify-ripper` folder, most likely in your home directory, and delete your `Users` folder. It will be regenerated on the next run.
-1. Finally, run `spotify-ripper` with the `--remove-from-playlist` command. When prompted, open the link it says it's opening for you in a web browser. Log into spotify, give it permission, and the copy the entire url it redirects to. If you're using the default redirect_url, it should be in the form "http://www.purple.com/?code=XXXXXXXXXXXX....." Ensure you haven't typed any other characters into where it asks for the URL you were redirected to, paste the URL and press enter. For some reason, when run through SSH you won't see anything you type or paste into this field.
-
-If you followed all of these steps correctly, `spotify-ripper` will completely empty the playlist you are ripping from when it finishes.
-
-A couple notes about Spotify's WebAPI token authentication:
-- The token is stored in a file named `.profile-<username>`.
-- The authentication token is stored where the script is executed from, so if you're in your home directory and execute a script thats in `/usr/bin` it will be stored in your home directory.
-- If you are running this in a script or other form of automation, you'll have to manually authenticate once but after that as long as you always execute it from the same location you won't have to authenticate again.
-- Depending on your browser, it may redirect quickly after going to http://www.purple.com?code=XXXXXXXXXX....  you have to be quick to copy the url with the full code and paste it into your terminal otherwise you'll have to re run the program to generate a new token.
 
 ## Installation
 

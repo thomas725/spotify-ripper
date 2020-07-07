@@ -285,7 +285,6 @@ class Ripper(threading.Thread):
                                 Fore.YELLOW + "Skipping " +
                                 track.link.uri + Fore.RESET)
                             print(Fore.CYAN + self.audio_file + Fore.RESET)
-                            self.post.queue_remove_from_playlist(idx)
                             self.progress.track_idx += 1
                             continue
 
@@ -340,10 +339,6 @@ class Ripper(threading.Thread):
                     # update id3v2 with metadata and embed front cover image
                     set_metadata_tags(args, self.audio_file, idx, track, self)
 
-                    # make a note of the index and remove all the
-                    # tracks from the playlist when everything is done
-                    self.post.queue_remove_from_playlist(idx)
-
                     # finally log success
                     self.post.log_success(track)
 
@@ -365,7 +360,8 @@ class Ripper(threading.Thread):
             self.post.create_playlist_wpl(tracks)
 
             # actually removing the tracks from playlist
-            self.post.remove_tracks_from_playlist()
+            if self.args.remove_from_playlist:
+                self.post.remove_tracks_from_playlist()
 
             # remove libspotify's offline storage cache
             self.post.remove_offline_cache()
@@ -429,7 +425,6 @@ class Ripper(threading.Thread):
             track = link.as_track()
             return iter([track])
         elif link.type == spotify.LinkType.PLAYLIST:
-            print('get playlist tracks')
             self.playlist_uri = uri
             tracks = get_playlist_tracks(self.session.user.canonical_name, uri)
             track_list = tracks.get('items')
@@ -440,7 +435,6 @@ class Ripper(threading.Thread):
             tracksIter = iter(uriList)
             for i in tracksIter:
                 trackList.append(self.session.get_link(i).as_track())
-            print('Loading playlist...')
             return iter(trackList)
         elif link.type == spotify.LinkType.STARRED:
             link_user = link.as_user()

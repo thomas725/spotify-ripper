@@ -133,13 +133,14 @@ def main(prog_args=sys.argv[1:]):
 
     parser = argparse.ArgumentParser(
         prog='spotify-ripper',
-        description='Rips Spotify URIs to MP3s with ID3 tags and album covers',
+        description='Rips Spotify URIs to media files with tags and album covers',
         parents=[settings_parser],
         formatter_class=argparse.RawTextHelpFormatter,
         epilog='''Example usage:
-    rip a single file: spotify-ripper -u user spotify:track:52xaypL0Kjzk0ngwv3oBPR
-    rip entire playlist: spotify-ripper -u user spotify:user:username:playlist:4vkGNcsS8lRXj4q945NIA4
-    rip a list of URIs: spotify-ripper -u user list_of_uris.txt
+    rip a single file: spotify-ripper -u <username> spotify:track:52xaypL0Kjzk0ngwv3oBPR
+    rip entire playlist: spotify-ripper -u <username> spotify:user:<username>:playlist:4vkGNcsS8lRXj4q945NIA4
+    rip a list of URIs: spotify-ripper -u <username> -p <password> list_of_uris.txt
+    rip a list of URIs using last login: spotify-ripper -l list_of_uris.txt
     rip tracks from Spotify's charts: spotify-ripper -l spotify:charts:regional:global:weekly:latest
     search for tracks to rip: spotify-ripper -l -Q 160 -o "album:Rumours track:'the chain'"
     ''')
@@ -362,8 +363,7 @@ def main(prog_args=sys.argv[1:]):
         help='Rip songs to Ogg Vorbis encoding instead of MP3')
     parser.add_argument(
         '-r', '--remove-from-playlist', action='store_true',
-        help='[WARNING: SPOTIFY IS NOT PROPROGATING PLAYLIST CHANGES TO '
-             'THEIR SERVERS] Delete tracks from playlist after successful '
+        help='Delete tracks from playlist after successful '
              'ripping [Default=no]')
     parser.add_argument(
         'uri', nargs="+",
@@ -407,13 +407,6 @@ def main(prog_args=sys.argv[1:]):
               "<YOUR_USER_NAME> instead of --user USER " +
               "<YOUR_USER_NAME>..." + Fore.RESET)
         sys.exit(1)
-
-    # give warning for broken feature
-    if args.remove_from_playlist:
-        print(Fore.RED + "--REMOVE-FROM-PLAYLIST WARNING:")
-        print("SPOTIFY HAS BROKEN libspotify")
-        print("THE PLAYLIST WILL BE EMPTIED AT THE END USING THE WEB API")
-        print("CHECK THE GITHUB FOR INSTRUCTIONS ON AUTHENTICATING THE WEB API"  + Fore.RESET)
 
     if args.wav:
         args.output_type = "wav"
