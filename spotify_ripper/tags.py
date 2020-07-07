@@ -13,11 +13,8 @@ import base64
 
 
 def set_metadata_tags(args, audio_file, idx, track, ripper):
-    # log completed file
-    print(Fore.GREEN + Style.BRIGHT + os.path.basename(audio_file) + Style.NORMAL + "\t[ " + format_size(os.stat(enc_str(audio_file))[ST_SIZE]) + " ]" + Fore.RESET)
-
     if args.output_type == "wav" or args.output_type == "pcm":
-        print(Fore.YELLOW + "Skipping metadata tagging for " + args.output_type + " encoding...")
+        print(Fore.YELLOW + "Skipping metadata tagging for " + args.output_type + " encoding..." + Fore.RESET)
         return
 
     # ensure everything is loaded still
@@ -349,74 +346,71 @@ def set_metadata_tags(args, audio_file, idx, track, ripper):
                 return ""
 
         # log id3 tags
-        print("-" * 79)
-        print(Fore.YELLOW + "Setting artist: " + artists_ascii + Fore.RESET)
+        print(Fore.YELLOW + "  Artist:\t" + Fore.RESET + artists_ascii)
         if album is not None:
-            print(Fore.YELLOW + "Setting album: " + album + Fore.RESET)
+            print(Fore.YELLOW + "  Album:\t" + Fore.RESET + album)
         if album_artist is not None:
-            print(Fore.YELLOW + "Setting album artist: " + album_artist + Fore.RESET)
-        print(Fore.YELLOW + "Setting title: " + title + Fore.RESET)
-        print(Fore.YELLOW + "Setting track info: (" + str(track.index) + ", " + str(num_tracks) + ")" + Fore.RESET)
-        print(Fore.YELLOW + "Setting disc info: (" + str(track.disc) + ", " + str(num_discs) + ")" + Fore.RESET)
-        print(Fore.YELLOW + "Setting release year: " + str(track.album.year) + Fore.RESET)
+            print(Fore.YELLOW + "  Album artist:\t" + Fore.RESET + album_artist)
+        print(Fore.YELLOW + "  Title:\t" + Fore.RESET + title)
+        print(Fore.YELLOW + "  Track number:\t" + Fore.RESET + str(track.index) + "/" + str(num_tracks))
+        print(Fore.YELLOW + "  Disc number:\t" + Fore.RESET + str(track.disc) + "/" + str(num_discs))
+        print(Fore.YELLOW + "  Year:\t\t" + Fore.RESET + str(track.album.year))
         if genres is not None and genres:
-            print(Fore.YELLOW + "Setting genres: " + " / ".join(genres_ascii) + Fore.RESET)
+            print(Fore.YELLOW + "  Genres:\t" + Fore.RESET + " / ".join(genres_ascii))
         if image is not None:
-            print(Fore.YELLOW + "Adding cover image" + Fore.RESET)
+            print(Fore.YELLOW + "  Cover image:\t" + Fore.RESET + "Yes")
         if args.comment is not None:
-            print(Fore.YELLOW + "Adding comment: " + comment_ascii + Fore.RESET)
+            print(Fore.YELLOW + "  Comment:\t" + Fore.RESET + comment_ascii)
         if args.grouping is not None:
-            print(Fore.YELLOW + "Adding grouping: " + grouping_ascii + Fore.RESET)
+            print(Fore.YELLOW + "  Grouping:\t" + Fore.RESET + grouping_ascii)
+        print(Fore.YELLOW + "  Time:\t\t" + Fore.RESET + format_time(audio.info.length))
+        print(Fore.YELLOW + "  Size:\t\t" + Fore.RESET + format_size(os.stat(enc_str(audio_file))[ST_SIZE]))
+
         if args.output_type == "flac":
+            print(Fore.YELLOW + "  Format:\t" + Fore.RESET + "Free Lossless Audio Codec")
             bit_rate = ((audio.info.bits_per_sample * audio.info.sample_rate) * audio.info.channels)
-            print("Time: " + format_time(audio.info.length) + "\tFree Lossless Audio Codec" + "\t[ " + bit_rate_str(bit_rate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels) + " ]")
-            print("-" * 79)
-            print(Fore.YELLOW + "Writing Vorbis comments - " + audio.tags.vendor + Fore.RESET)
-            print("-" * 79)
+            print(Fore.YELLOW + "  Quality:\t" + Fore.RESET + bit_rate_str(bit_rate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels))
+            print(Fore.YELLOW + "  Vorbis comments:\t" + Fore.RESET + audio.tags.vendor)
+
         if args.output_type == "aiff":
-            print("Time: " + format_time(audio.info.length) + "\tAudio Interchange File Format" + "\t[ " + bit_rate_str(audio.info.bitrate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels) + " ]")
-            print("-" * 79)
+            print(Fore.YELLOW + "  Format:\t" + Fore.RESET + "Audio Interchange File Format")
+            print(Fore.YELLOW + "  Quality:\t" + Fore.RESET + bit_rate_str(audio.info.bitrate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels))
             id3_version = "v%d.%d" % (audio.tags.version[0], audio.tags.version[1])
-            print("ID3 " + id3_version + ": " + str(len(audio.tags.values())) + " frames")
-            print(Fore.YELLOW + "Writing ID3 version " + id3_version + Fore.RESET)
-            print("-" * 79)
-        if args.output_type == "alac.m4a":
+            print(Fore.YELLOW + "  ID3:\t\t" + Fore.RESET + id3_version + " - " + str(len(audio.tags.values())) + " frames")
+
+        elif args.output_type == "alac.m4a":
+            print(Fore.YELLOW + "  Format:\t" + Fore.RESET + "Apple Lossless")
             bit_rate = ((audio.info.bits_per_sample * audio.info.sample_rate) * audio.info.channels)
-            print("Time: " + format_time(audio.info.length) + "\tApple Lossless" + "\t[ " + bit_rate_str(bit_rate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels) + " ]")
-            print("-" * 79)
-            print(Fore.YELLOW + "Writing Apple iTunes metadata - " + Fore.RESET)
-            print("-" * 79)
+            print(Fore.YELLOW + "  Quality:\t" + Fore.RESET + bit_rate_str(bit_rate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels))
+            print(Fore.YELLOW + "  Apple iTunes metadata\t" + Fore.RESET + str(audio.info.codec))
+
         elif args.output_type == "ogg":
-            print("Time: " + format_time(audio.info.length) + "\tOgg Vorbis Codec" + "\t[ " + bit_rate_str(audio.info.bitrate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels) + " ]")
-            print("-" * 79)
-            print(Fore.YELLOW + "Writing Vorbis comments - " + audio.tags.vendor + Fore.RESET)
-            print("-" * 79)
+            print(Fore.YELLOW + "  Format:\t" + Fore.RESET + "Ogg Vorbis Codec")
+            print(Fore.YELLOW + "  Quality:\t" + Fore.RESET + bit_rate_str(audio.info.bitrate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels))
+            print(Fore.YELLOW + "  Vorbis comments:\t" + Fore.RESET + audio.tags.vendor)
+
         elif args.output_type == "opus":
-            print("Time: " + format_time(audio.info.length) + "\tOpus Codec" + "\t[ " + channel_str(audio.info.channels) + " ]")
-            print("-" * 79)
-            print(Fore.YELLOW + "Writing Vorbis comments - " + audio.tags.vendor + Fore.RESET)
-            print("-" * 79)
+            print(Fore.YELLOW + "  Format:\t" + Fore.RESET + "Opus Codec")
+            print(Fore.YELLOW + "  Quality:\t" + Fore.RESET + channel_str(audio.info.channels))
+            print(Fore.YELLOW + "  Vorbis comments:\t" + Fore.RESET + audio.tags.vendor)
+
         elif args.output_type == "mp3":
-            print("Time: " + format_time(audio.info.length) + "\tMPEG" + str(audio.info.version) + ", Layer " + ("I" * audio.info.layer) + "\t[ " + bit_rate_str(audio.info.bitrate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " +
-                  mode_str(audio.info.mode) + " ]")
-            print("-" * 79)
+            print(Fore.YELLOW + "  Format:\t" + Fore.RESET + "MPEG" + str(audio.info.version) + ", Layer " + ("I" * audio.info.layer))
+            print(Fore.YELLOW + "  Quality:\t" + Fore.RESET + bit_rate_str(audio.info.bitrate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + mode_str(audio.info.mode))
             id3_version = "v%d.%d" % (audio.tags.version[0], audio.tags.version[1])
-            print("ID3 " + id3_version + ": " + str(len(audio.tags.values())) + " frames")
-            print(Fore.YELLOW + "Writing ID3 version " + id3_version + Fore.RESET)
-            print("-" * 79)
+            print(Fore.YELLOW + "  ID3:\t\t" + Fore.RESET + id3_version + " - " + str(len(audio.tags.values())) + " frames")
+
         elif args.output_type == "aac":
-            print("Time: " + format_time(audio.info.length) + "\tAdvanced Audio Coding" + "\t[ " + bit_rate_str(audio.info.bitrate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels) + " ]")
-            print("-" * 79)
+            print(Fore.YELLOW + "  Format:\t" + Fore.RESET + "Advanced Audio Coding")
+            print(Fore.YELLOW + "  Quality:\t" + Fore.RESET + bit_rate_str(audio.info.bitrate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels))
             id3_version = "v%d.%d" % (audio.tags.version[0], audio.tags.version[1])
-            print("ID3 " + id3_version + ": " + str(len(audio.tags.values())) + " frames")
-            print(Fore.YELLOW + "Writing ID3 version " + id3_version + Fore.RESET)
-            print("-" * 79)
+            print(Fore.YELLOW + "  ID3:\t\t" + Fore.RESET + id3_version + " - " + str(len(audio.tags.values())) + " frames")
+
         elif args.output_type == "m4a":
+            print(Fore.YELLOW + "  Format:\t" + Fore.RESET + "MPEG-4 Part 14 Audio")
             bit_rate = ((audio.info.bits_per_sample * audio.info.sample_rate) * audio.info.channels)
-            print("Time: " + format_time(audio.info.length) + "\tMPEG-4 Part 14 Audio" + "\t[ " + bit_rate_str(bit_rate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels) + " ]")
-            print("-" * 79)
-            print(Fore.YELLOW + "Writing Apple iTunes metadata - " + str(audio.info.codec) + Fore.RESET)
-            print("-" * 79)
+            print(Fore.YELLOW + "  Quality:\t" + Fore.RESET + bit_rate_str(bit_rate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels))
+            print(Fore.YELLOW + "  Apple iTunes metadata:\t" + Fore.RESET + str(audio.info.codec))
 
     except id3.error:
         print(Fore.YELLOW + "Warning: exception while saving id3 tag: " + str(id3.error) + Fore.RESET)

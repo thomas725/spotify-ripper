@@ -144,7 +144,6 @@ class Ripper(threading.Thread):
     def login(self):
         args = self.args
 
-        print("Logging in...")
         if args.last:
             self.login_as_last()
 
@@ -232,14 +231,19 @@ class Ripper(threading.Thread):
             # ripping loop
             for idx, track in enumerate(tracks):
                 try:
+                    print("-" * 79)
+
                     self.check_stop_time()
                     self.skip.clear()
 
                     if self.abort.is_set():
                         break
 
-                    print('Loading track...')
                     track.load(args.timeout)
+
+                    if self.progress.total_tracks > 1:
+                        print("[ " + str(self.progress.track_idx) + " / " + str(self.progress.total_tracks + self.progress.skipped_tracks) + " ] ", end = '')
+
                     if track.availability != 1 or track.is_local:
                         print(Fore.RED + 'Track is not available, skipping...' + Fore.RESET)
                         self.post.log_failure(track)
@@ -252,7 +256,7 @@ class Ripper(threading.Thread):
                         if is_partial(self.audio_file, track):
                             print("Overwriting partial file")
                         else:
-                            print(Fore.YELLOW + "Skipping " + track.link.uri + Fore.RESET)
+                            print(Fore.YELLOW + Style.BRIGHT + "Skipping " + track.link.uri + Style.NORMAL + Fore.RESET)
                             print(Fore.CYAN + self.audio_file + Fore.RESET)
                             self.progress.track_idx += 1
                             continue
@@ -421,14 +425,12 @@ class Ripper(threading.Thread):
         elif link.type == spotify.LinkType.ALBUM:
             album = link.as_album()
             album_browser = album.browse()
-            print('Loading album browser...')
             album_browser.load(args.timeout)
             self.current_album = album
             return iter(album_browser.tracks)
         elif link.type == spotify.LinkType.ARTIST:
             artist = link.as_artist()
             artist_browser = artist.browse()
-            print('Loading artist browser...')
             artist_browser.load(args.timeout)
             return iter(artist_browser.tracks)
         return iter([])
@@ -501,10 +503,18 @@ class Ripper(threading.Thread):
 
     def on_logged_in(self, session, error):
         if error is spotify.ErrorType.OK:
-            print("Logged in as " + session.user.display_name)
+            print(Fore.GREEN + "Logged in as " + session.user.display_name + "\n" + Fore.RESET)
         else:
-            error_map = {9: "CLIENT_TOO_OLD", 8: "UNABLE_TO_CONTACT_SERVER", 6: "BAD_USERNAME_OR_PASSWORD", 7: "USER_BANNED", 15: "USER_NEEDS_PREMIUM", 16: "OTHER_TRANSIENT", 10: "OTHER_PERMANENT"}
-            print("Logged in failed: " + error_map.get(error, "UNKNOWN_ERROR_CODE: " + str(error)))
+            error_map = {
+                9: "CLIENT_TOO_OLD",
+                8: "UNABLE_TO_CONTACT_SERVER",
+                6: "BAD_USERNAME_OR_PASSWORD",
+                7: "USER_BANNED",
+                15: "USER_NEEDS_PREMIUM",
+                16: "OTHER_TRANSIENT",
+                10: "OTHER_PERMANENT"
+            }
+            print(Fore.RED + "Login failed: " + error_map.get(error, "UNKNOWN_ERROR_CODE: " + str(error)) + Fore.RESET)
             self.login_success = False
             self.logged_in.set()
 
@@ -613,14 +623,11 @@ class Ripper(threading.Thread):
         # reset progress
         self.progress.prepare_track(track)
 
-        if self.progress.total_tracks > 1:
-            print(Fore.GREEN + "[ " + str(self.progress.track_idx) + " / " + str(self.progress.total_tracks + self.progress.skipped_tracks) + " ] Ripping " + track.link.uri + Fore.WHITE + "\t(ESC to skip)" + Fore.RESET)
-        else:
-            print(Fore.GREEN + "Ripping " + track.link.uri + Fore.RESET)
+        print(Fore.GREEN + Style.BRIGHT + "Ripping " + track.link.uri + Style.NORMAL + Fore.RESET)
         print(Fore.CYAN + self.audio_file + Fore.RESET)
 
         file_size = calc_file_size(track)
-        print("Track Download Size: " + format_size(file_size))
+        print("Track download size: " + format_size(file_size))
 
         if args.output_type == "wav" or args.plus_wav:
             audio_file = change_file_extension(self.audio_file, "wav") if \
@@ -687,7 +694,7 @@ class Ripper(threading.Thread):
     def finish_rip(self, track):
         self.progress.end_track()
         if self.pipe is not None:
-            print(Fore.GREEN + 'Rip complete' + Fore.RESET)
+            print(Fore.GREEN + 'Rip complete, media information:' + Fore.RESET)
             self.pipe.flush()
             self.pipe.close()
 

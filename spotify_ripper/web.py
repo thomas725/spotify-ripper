@@ -39,7 +39,13 @@ class WebAPI(object):
     def __init__(self, args, ripper):
         self.args = args
         self.ripper = ripper
-        self.cache = {"albums_with_filter": {}, "artists_on_album": {}, "genres": {}, "charts": {}, "large_coverart": {}}
+        self.cache = {
+            "albums_with_filter": {},
+            "artists_on_album": {},
+            "genres": {},
+            "charts": {},
+            "large_coverart": {}
+        }
 
     def cache_result(self, name, uri, result):
         self.cache[name][uri] = result
