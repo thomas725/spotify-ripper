@@ -33,23 +33,17 @@ Spotify has published newer libraries intended for Android and iOS development, 
 
 -  Real-time VBR or CBR ripping from Spotify PCM stream
 -  Writes ID3v2/metadata tags (including album covers)
--  Rips files into the following directory structure: ``artist/album/artist - song.mp3`` by default or optionally into a user-specified structure (see `Format String`_ section below)
+-  Rips files into the following directory structure: `artist/album/artist - song.mp3` by default or optionally into a user-specified structure (see `Format String`_ section below)
 -  Option to skip or overwrite existing files
 -  Accepts tracks, playlists, albums, and artist URIs
 -  Search for tracks using Spotify queries
 -  Options for interactive login (no password in shell history) and to relogin using previous credentials
 -  Option to remove tracks from playlist after successful ripping
--  Globally installs ripper script using pip
+-  Globally installs ripper using pip3
 -  Use a config file to specify common command-line options
 -  Helpful progress bar to gauge the time remaining until completion
 -  Keep local files in sync with a Spotify playlist, m3u and wpl playlist file
--  Option to rip to ALAC, a loseless codec, instead of MP3 (requires extra ``avconv`` dependency)
--  Option to rip to FLAC, a loseless codec, instead of MP3 (requires extra ``flac`` dependency)
--  Option to rip to AIFF, a loseless codec, instead of MP3 (requires extra ``sox`` dependency)
--  Option to rip to Ogg Vorbis instead of MP3 (requires extra ``vorbis-tools`` dependency)
--  Option to rip to Opus instead of MP3 (requires extra ``opus-tools`` dependency)
--  Option to rip to AAC instead of MP3 (requires extra ``faac`` dependency)
--  Option to rip to MP4/M4A instead of MP3 (requires extra ``fdk-aac`` dependency)
+-  Option to rip to ALAC/FLAC/AIFF (loseless codecs) or Ogg Vorbis, Opus, AAC and MP4/M4A instead of MP3
 -  Option to replace output filenames
 -  Option to normalize output filenames to NFKD (see http://unicode.org/faq/normalization.html)
 
@@ -239,106 +233,36 @@ If you want to redownload a playlist (for example with improved quality), you ei
 
 ## Installation
 
+Use `pip3` to install and upgrade to the latest version.
+
+```
+$ pip3 install --user --upgrade git+https://github.com/scaronni/spotify-ripper
+```
+
 ### Prerequisites
 
--  [libspotify](https://developer.spotify.com/technologies/libspotify)
--  [pyspotify](https://github.com/mopidy/pyspotify)
--  [spotipy](https://github.com/plamere/spotipy)
--  A Spotify binary app key [spotify\_appkey.key](https://devaccount.spotify.com/my-account/keys/)
--  [lame](http://lame.sourceforge.net)
--  [mutagen](https://mutagen.readthedocs.org/en/latest/)
+Python libraries:
+
 -  [colorama](https://pypi.python.org/pypi/colorama)
--  (optional) [flac](https://xiph.org/flac/index.html)
--  (optional) [opus-tools](http://www.opus-codec.org/downloads/)
--  (optional) [vorbis-tools](http://downloads.xiph.org/releases/vorbis/)
--  (optional) [faac](http://www.audiocoding.com/downloads.html)
--  (optional) [fdkaac](https://github.com/nu774/fdkaac)
--  (optional) [sox](http://sox.sourceforge.net)
+-  [mutagen](https://mutagen.readthedocs.org/en/latest/)
+-  [pyspotify](https://github.com/mopidy/pyspotify)
+-  [requests](https://pypi.org/project/requests/)
+-  [schedule](https://pypi.org/project/schedule/)
+-  [spotipy](https://github.com/plamere/spotipy)
 
-### Mac OS X
+System libraries and commands
 
-Recommend approach uses [homebrew](http://brew.sh/) and [pyenv](https://github.com/yyuu/pyenv).
+-  [lame](http://lame.sourceforge.net)
+-  [libspotify](https://developer.spotify.com/technologies/libspotify), with a Spotify binary app key [spotify\_appkey.key](https://devaccount.spotify.com/my-account/keys/)
+-  [faac](http://www.audiocoding.com/downloads.html) (optional)
+-  [fdkaac](https://github.com/mstorsjo/fdk-aac/releases) (optional)
+-  [ffmpeg](https://ffmpeg.org/download.html#releases) (optional)
+-  [flac](https://xiph.org/flac/index.html) (optional)
+-  [opus-tools](http://www.opus-codec.org/downloads/) (optional)
+-  [sox](http://sox.sourceforge.net) (optional)
+-  [vorbis-tools](http://downloads.xiph.org/releases/vorbis/) (optional)
 
-To install `pyenv` using homebrew:
-
-```
-$ brew update
-$ brew install pyenv
-$ eval "$(pyenv init -)"
-$ echo 'if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi' >> ~/.bash_profile
-$ pyenv install 3.8.3
-$ pyenv global 3.8.3
-$ python -V
-```
-
-To install `spotify-ripper` once `pyenv` is setup:
-
-```
-$ brew install homebrew/binary/libspotify
-$ sudo ln -s /usr/local/opt/libspotify/lib/libspotify.12.1.51.dylib /usr/local/opt/libspotify/lib/libspotify
-$ brew install lame
-$ pip install git+https://github.com/scaronni/spotify-ripper
-$ pyenv rehash
-```
-
-Download an application key file `spotify_appkey.key` from `https://devaccount.spotify.com/my-account/keys/` (requires a Spotify Premium Account) and move the file to the `~/.spotify-ripper` directory (or use the `-k | --key` option).
-
-### Ubuntu/Debian
-
-Recommend approach uses the system Python.
-
-```
-$ sudo apt-get install lame build-essential libffi-dev
-$ wget https://developer.spotify.com/download/libspotify/libspotify-12.1.51-Linux-x86_64-release.tar.gz
-$ tar xvf libspotify-12.1.51-Linux-x86_64-release.tar.gz
-$ cd libspotify-12.1.51-Linux-x86_64-release/
-$ sudo make install prefix=/usr/local
-$ pip3 install --user --upgrade git+https://github.com/scaronni/spotify-ripper
-```
-
-Download an application key file `spotify_appkey.key` from `https://devaccount.spotify.com/my-account/keys/` (requires a Spotify Premium Account) and move the file to the `~/.spotify-ripper` directory (or use the `-k | --key` option).
-
-## Optional Encoding Formats
-
-In addition to MP3 encoding, `spotify-ripper` supports encoding to FLAC, AAC, MP4/M4A, Ogg Vorbis and Opus. However, additional encoding tools need to be installed for each codec you wish to use.
-
-### Mac OS X
-
-```
-$ brew install flac
-$ brew install libav
-$ brew install faac
-$ brew install fdk-aac-encoder
-$ brew install vorbis-tools
-$ brew install opus-tools
-$ brew install sox
-```
-
-### Ubuntu/Debian
-
-```
-$ sudo apt-get install flac
-$ sudo apt-get install libav-tools
-$ sudo apt-get install faac
-$ sudo apt-get install libfdk-aac-dev automake autoconf
-$ wget https://github.com/nu774/fdkaac/archive/v0.6.2.tar.gz
-$ tar xvf v0.6.2.tar.gz
-$ cd fdkaac-0.6.2
-$ autoreconf -i
-$ ./configure
-$ sudo make install
-$ sudo apt-get install vorbis-tools
-$ sudo apt-get install opus-tools
-$ sudo apt-get install install sox
-```
-
-## Upgrade
-
-Use `pip3` to upgrade to the latest version.
-
-```
-$ pip3 install --user --upgrade git+https://github.com/scaronni/spotify-ripper
-```
+An application key file (`spotify_appkey.key`) from `https://devaccount.spotify.com/my-account/keys/` (requires a Spotify Premium Account) in the `~/.spotify-ripper` directory (or use the `-k | --key` option).
 
 ## License
 
