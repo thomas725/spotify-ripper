@@ -277,7 +277,7 @@ To install `spotify-ripper` once `pyenv` is setup:
 $ brew install homebrew/binary/libspotify
 $ sudo ln -s /usr/local/opt/libspotify/lib/libspotify.12.1.51.dylib /usr/local/opt/libspotify/lib/libspotify
 $ brew install lame
-$ pip install git+https://github.com/SolidHal/spotify-ripper
+$ pip install git+https://github.com/scaronni/spotify-ripper
 $ pyenv rehash
 ```
 
@@ -293,7 +293,7 @@ $ wget https://developer.spotify.com/download/libspotify/libspotify-12.1.51-Linu
 $ tar xvf libspotify-12.1.51-Linux-x86_64-release.tar.gz
 $ cd libspotify-12.1.51-Linux-x86_64-release/
 $ sudo make install prefix=/usr/local
-$ pip3 install --user --upgrade git+https://github.com/SolidHal/spotify-ripper
+$ pip3 install --user --upgrade git+https://github.com/scaronni/spotify-ripper
 ```
 
 Download an application key file `spotify_appkey.key` from `https://devaccount.spotify.com/my-account/keys/` (requires a Spotify Premium Account) and move the file to the `~/.spotify-ripper` directory (or use the `-k | --key` option).
@@ -337,7 +337,7 @@ $ sudo apt-get install install sox
 Use `pip3` to upgrade to the latest version.
 
 ```
-$ pip3 install --user --upgrade git+https://github.com/SolidHal/spotify-ripper
+$ pip3 install --user --upgrade git+https://github.com/scaronni/spotify-ripper
 ```
 
 ## License
