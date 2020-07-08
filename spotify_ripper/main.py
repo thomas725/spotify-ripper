@@ -256,10 +256,7 @@ def main(prog_args=sys.argv[1:]):
     if args.output_type in encoders.keys():
         encoder = encoders[args.output_type][0]
         if which(encoder) is None:
-            print(Fore.RED + "Missing dependency '" + encoder + "'.  Please install and add to path..." + Fore.RESET)
-            # assumes OS X or Ubuntu/Debian
-            command_help = ("brew install " if sys.platform == "darwin" else "sudo apt-get install ")
-            print("...try " + Fore.YELLOW + command_help + encoders[args.output_type][1] + Fore.RESET)
+            print(Fore.RED + "Missing dependency '" + encoder + "'. Please install '" + encoders[args.output_type][1] + "'." + Fore.RESET)
             sys.exit(1)
 
     # format string

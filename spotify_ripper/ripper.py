@@ -549,7 +549,6 @@ class Ripper(threading.Thread):
         """logout from Spotify"""
         time.sleep(0.1)
         if self.logged_in.is_set():
-            print('Logging out...')
             self.session.logout()
             self.logged_out.wait()
 

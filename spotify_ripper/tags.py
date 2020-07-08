@@ -352,7 +352,7 @@ def set_metadata_tags(args, audio_file, idx, track, ripper):
             print(Fore.YELLOW + "  Format:\t" + Fore.RESET + "Free Lossless Audio Codec")
             bit_rate = ((audio.info.bits_per_sample * audio.info.sample_rate) * audio.info.channels)
             print(Fore.YELLOW + "  Quality:\t" + Fore.RESET + bit_rate_str(bit_rate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels))
-            print(Fore.YELLOW + "  Vorbis comments:\t" + Fore.RESET + audio.tags.vendor)
+            print(Fore.YELLOW + "  Comment:\t" + Fore.RESET + audio.tags.vendor)
 
         if args.output_type == "aiff":
             print(Fore.YELLOW + "  Format:\t" + Fore.RESET + "Audio Interchange File Format")
@@ -364,17 +364,17 @@ def set_metadata_tags(args, audio_file, idx, track, ripper):
             print(Fore.YELLOW + "  Format:\t" + Fore.RESET + "Apple Lossless")
             bit_rate = ((audio.info.bits_per_sample * audio.info.sample_rate) * audio.info.channels)
             print(Fore.YELLOW + "  Quality:\t" + Fore.RESET + bit_rate_str(bit_rate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels))
-            print(Fore.YELLOW + "  Apple iTunes metadata\t" + Fore.RESET + str(audio.info.codec))
+            print(Fore.YELLOW + "  iTunes:\t" + Fore.RESET + str(audio.info.codec))
 
         elif args.output_type == "ogg":
             print(Fore.YELLOW + "  Format:\t" + Fore.RESET + "Ogg Vorbis Codec")
             print(Fore.YELLOW + "  Quality:\t" + Fore.RESET + bit_rate_str(audio.info.bitrate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels))
-            print(Fore.YELLOW + "  Vorbis comments:\t" + Fore.RESET + audio.tags.vendor)
+            print(Fore.YELLOW + "  Comment:\t" + Fore.RESET + audio.tags.vendor)
 
         elif args.output_type == "opus":
             print(Fore.YELLOW + "  Format:\t" + Fore.RESET + "Opus Codec")
             print(Fore.YELLOW + "  Quality:\t" + Fore.RESET + channel_str(audio.info.channels))
-            print(Fore.YELLOW + "  Vorbis comments:\t" + Fore.RESET + audio.tags.vendor)
+            print(Fore.YELLOW + "  Comment:\t" + Fore.RESET + audio.tags.vendor)
 
         elif args.output_type == "mp3":
             print(Fore.YELLOW + "  Format:\t" + Fore.RESET + "MPEG" + str(audio.info.version) + ", Layer " + ("I" * audio.info.layer))
@@ -392,7 +392,7 @@ def set_metadata_tags(args, audio_file, idx, track, ripper):
             print(Fore.YELLOW + "  Format:\t" + Fore.RESET + "MPEG-4 Part 14 Audio")
             bit_rate = ((audio.info.bits_per_sample * audio.info.sample_rate) * audio.info.channels)
             print(Fore.YELLOW + "  Quality:\t" + Fore.RESET + bit_rate_str(bit_rate / 1000) + " @ " + str(audio.info.sample_rate) + " Hz - " + channel_str(audio.info.channels))
-            print(Fore.YELLOW + "  Apple iTunes metadata:\t" + Fore.RESET + str(audio.info.codec))
+            print(Fore.YELLOW + "  iTunes:\t" + Fore.RESET + str(audio.info.codec))
 
     except id3.error:
         print(Fore.YELLOW + "Warning: exception while saving id3 tag: " + str(id3.error) + Fore.RESET)
