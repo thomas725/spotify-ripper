@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from colorama import Fore, Style
-from mutagen import mp3, id3, flac, aiff, oggvorbis, oggopus, aac
+from mutagen import mp4, mp3, id3, flac, aiff, oggvorbis, oggopus, aac
 from stat import ST_SIZE
 from spotify_ripper.utils import *
 from datetime import datetime
@@ -298,29 +298,11 @@ def set_metadata_tags(args, audio_file, idx, track, ripper):
             audio = aac.AAC(audio_file)
             set_id3_tags_raw(audio, audio_file)
         elif args.output_type == "m4a":
-            if sys.version_info >= (3, 0):
-                from mutagen import mp4
-
-                audio = mp4.MP4(audio_file)
-                set_mp4_tags(audio)
-            else:
-                from mutagen import m4a, mp4
-
-                audio = m4a.M4A(audio_file)
-                set_m4a_tags(audio)
-                audio = mp4.MP4(audio_file)
+            audio = mp4.MP4(audio_file)
+            set_mp4_tags(audio)
         elif args.output_type == "alac.m4a":
-            if sys.version_info >= (3, 0):
-                from mutagen import mp4
-
-                audio = mp4.MP4(audio_file)
-                set_mp4_tags(audio)
-            else:
-                from mutagen import m4a, mp4
-
-                audio = m4a.M4A(audio_file)
-                set_m4a_tags(audio)
-                audio = mp4.MP4(audio_file)
+            audio = mp4.MP4(audio_file)
+            set_mp4_tags(audio)
         elif args.output_type == "mp3":
             audio = mp3.MP3(audio_file, ID3=id3.ID3)
             set_id3_tags(audio)

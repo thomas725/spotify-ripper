@@ -36,11 +36,7 @@ def path_exists(path):
 def print_str(_str):
     """print without newline"""
     if not get_args().has_log:
-        if sys.version_info >= (3, 0):
-            print(_str, end='', flush=True)
-        else:
-            sys.stdout.write(_str)
-            sys.stdout.flush()
+        print(_str, end='', flush=True)
 
 
 def norm_path(path):
@@ -65,28 +61,16 @@ def escape_filename_part(part):
 
 def to_ascii(_str, on_error='ignore'):
     """convert unicode to ascii if necessary"""
-    # python 3 renamed unicode to str
     args = get_args()
-    if sys.version_info >= (3, 0):
-        if isinstance(_str, bytes) and not args.ascii:
-            return str(_str, "utf-8")
-        elif isinstance(_str, str) and args.ascii:
-            return _str.encode("ascii", on_error).decode("utf-8")
-        else:
-            return _str
+    if isinstance(_str, bytes) and not args.ascii:
+        return str(_str, "utf-8")
+    elif isinstance(_str, str) and args.ascii:
+        return _str.encode("ascii", on_error).decode("utf-8")
     else:
-        if isinstance(_str, str) and not args.ascii:
-            return unicode(_str, "utf-8")
-        elif isinstance(_str, unicode) and args.ascii:
-            return _str.encode("ascii", on_error).decode("utf-8")
-        else:
-            return _str
+        return _str
 
 
 def to_normalized_ascii(_str):
-    if sys.version_info < (3, 0):
-        if not isinstance(_str, unicode):
-            _str = unicode(_str, "utf-8")
     return unicodedata.normalize('NFKD', _str).encode('ASCII', 'ignore')
 
 

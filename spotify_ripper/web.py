@@ -7,13 +7,10 @@ from spotify_ripper.utils import *
 import os
 import time
 import spotify
+import spotipy
 import requests
 import csv
 import re
-
-import spotipy
-import spotipy.client
-from spotipy.oauth2 import SpotifyClientCredentials
 
 client_credentials_sp = None
 
@@ -22,7 +19,7 @@ def init_client_credentials_sp():
 
     global client_credentials_sp
     if client_credentials_sp is None:
-        client_credentials_manager = SpotifyClientCredentials()
+        client_credentials_manager = spotipy.oauth2.SpotifyClientCredentials()
         client_credentials_sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
         client_credentials_sp.trace = False
 

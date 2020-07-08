@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
@@ -9,6 +9,7 @@ from spotify_ripper.utils import *
 import os
 import sys
 import codecs
+import configparser
 import argparse
 import pkg_resources
 import schedule
@@ -17,18 +18,12 @@ import select
 import tty
 import termios
 
-if sys.version_info >= (3, 0):
-    import configparser as ConfigParser
-else:
-    import ConfigParser
-
-
 def load_config(defaults):
     _settings_dir = settings_dir()
     config_file = os.path.join(_settings_dir, "config.ini")
     if os.path.exists(config_file):
         try:
-            config = ConfigParser.ConfigParser()
+            config = configparser.ConfigParser()
             config.read(config_file)
             if not config.has_section("main"):
                 return defaults
@@ -59,37 +54,11 @@ def load_config(defaults):
 
             # overwrite any existing defaults
             defaults.update(config_items_new)
-        except ConfigParser.Error as e:
+        except configparser.Error as e:
             print("\nError parsing config file: " + config_file)
             print(str(e))
 
     return defaults
-
-
-def patch_bug_in_mutagen():
-    from mutagen.mp4 import MP4Tags, MP4Cover
-    from mutagen.mp4._atom import Atoms, Atom, AtomError
-    import struct
-
-    def _key2name(key):
-        if sys.version_info >= (3, 0):
-            return key.encode("latin-1")
-        else:
-            return key
-
-    def __fixed_render_cover(self, key, value):
-        atom_data = []
-        for cover in value:
-            try:
-                imageformat = cover.imageformat
-            except AttributeError:
-                imageformat = MP4Cover.FORMAT_JPEG
-            atom_data.append(Atom.render(b"data", struct.pack(">2I", imageformat, 0) + bytes(cover)))
-        return Atom.render(_key2name(key), b"".join(atom_data))
-
-    print(Fore.RED + "Monkey-patching MP4/Python 3.x bug in Mutagen" + Fore.RESET)
-    MP4Tags.__fixed_render_cover = __fixed_render_cover
-    MP4Tags._MP4Tags__atoms[b"covr"] = (MP4Tags._MP4Tags__parse_cover, MP4Tags.__fixed_render_cover)
 
 
 def main(prog_args=sys.argv[1:]):
@@ -239,11 +208,6 @@ def main(prog_args=sys.argv[1:]):
     if args.ascii_path_only is True:
         args.ascii = True
 
-    # unless explicitly told not to, we are going to encode
-    # for utf-8 by default
-    if not args.ascii and sys.version_info < (3, 0):
-        sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
-
     # small sanity check on user option
     if args.user is not None and args.user == "USER":
         print(Fore.RED + "Please pass your username as --user " + "<YOUR_USER_NAME> instead of --user USER " + "<YOUR_USER_NAME>..." + Fore.RESET)
@@ -370,11 +334,6 @@ def main(prog_args=sys.argv[1:]):
 
     print(Fore.YELLOW + "  Format String:\t" + Fore.RESET + args.format)
     print(Fore.YELLOW + "  Overwrite files:\t" + Fore.RESET + ("Yes" if args.overwrite else "No"))
-
-    # patch a bug when Python 3/MP4
-    if sys.version_info >= (3, 0) and \
-            (args.output_type == "m4a" or args.output_type == "alac.m4a"):
-        patch_bug_in_mutagen()
 
     ripper = Ripper(args)
     ripper.start()

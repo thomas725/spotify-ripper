@@ -1,5 +1,4 @@
-import spotipy.util as util
-import spotipy.client
+import spotipy
 import os
 
 redirect_uri = 'http://www.purple.com'
@@ -31,7 +30,7 @@ def get_playlist_tracks(username, playlistURI):
     p1, p2, p3, p4, rPlaylistID = playlistURI.split(':', 5)
 
     global token
-    token = util.prompt_for_user_token(username, scope)
+    token = spotipy.util.prompt_for_user_token(username, scope)
 
     global spotInstance
     spotInstance = spotipy.Spotify(auth=token)
