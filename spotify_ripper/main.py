@@ -239,6 +239,8 @@ def main(prog_args=sys.argv[1:]):
             args.vbr = "5"
     elif args.alac:
         args.output_type = "alac.m4a"
+    elif args.aiff:
+        args.output_type = "aiff"
     else:
         args.output_type = "mp3"
 
@@ -250,8 +252,8 @@ def main(prog_args=sys.argv[1:]):
         "ogg": ("oggenc", "vorbis-tools"),
         "opus": ("opusenc", "opus-tools"),
         "mp3": ("lame", "lame"),
-        "m4a": ("fdkaac", "fdk-aac-encoder"),
-        "alac.m4a": ("avconv", "libav-tools"),
+        "m4a": ("fdkaac", "aac-enc"),
+        "alac.m4a": ("ffmpeg", "ffmpeg"),
     }
     if args.output_type in encoders.keys():
         encoder = encoders[args.output_type][0]
