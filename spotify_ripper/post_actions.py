@@ -23,12 +23,11 @@ class PostActions(object):
 
         # create a log file for rip failures
         if args.fail_log is not None:
-            _base_dir = base_dir()
-            if not path_exists(_base_dir):
-                os.makedirs(enc_str(_base_dir))
+            if not path_exists(base_dir()):
+                os.makedirs(enc_str(base_dir()))
 
             encoding = "ascii" if args.ascii else "utf-8"
-            self.fail_log_file = codecs.open(enc_str(os.path.join(_base_dir, args.fail_log)), 'w', encoding)
+            self.fail_log_file = codecs.open(enc_str(os.path.join(base_dir(), args.fail_log)), 'w', encoding)
 
     def log_success(self, track):
         self.success_tracks.append(track)
@@ -160,8 +159,7 @@ class PostActions(object):
         name = self.get_playlist_name()
         if name is not None and args.playlist_m3u:
             name = sanitize_playlist_name(to_ascii(name))
-            _base_dir = base_dir()
-            playlist_path = to_ascii(os.path.join(_base_dir, name + '.m3u'))
+            playlist_path = to_ascii(os.path.join(base_dir(), name + '.m3u'))
 
             print(Fore.GREEN + "Creating playlist m3u file " + playlist_path + Fore.RESET)
 
@@ -173,7 +171,7 @@ class PostActions(object):
                         continue
                     _file = ripper.format_track_path(idx, track)
                     if path_exists(_file):
-                        playlist.write(os.path.relpath(_file, _base_dir) + "\n")
+                        playlist.write(os.path.relpath(_file, base_dir()) + "\n")
 
     def create_playlist_wpl(self, tracks):
         args = self.args
@@ -182,8 +180,7 @@ class PostActions(object):
         name = self.get_playlist_name()
         if name is not None and args.playlist_wpl:
             name = sanitize_playlist_name(to_ascii(name))
-            _base_dir = base_dir()
-            playlist_path = to_ascii(os.path.join(_base_dir, name + '.wpl'))
+            playlist_path = to_ascii(os.path.join(base_dir(), name + '.wpl'))
 
             print(Fore.GREEN + "Creating playlist wpl file " + playlist_path + Fore.RESET)
 
@@ -212,7 +209,7 @@ class PostActions(object):
                 for _file in track_paths:
                     _file.replace("&", "&amp;")
                     _file.replace("'", "&apos;")
-                    playlist.write('\t\t\t<media src="' + os.path.relpath(_file, _base_dir) + "\"/>\n")
+                    playlist.write('\t\t\t<media src="' + os.path.relpath(_file, base_dir()) + "\"/>\n")
                 playlist.write('\t\t</seq>\n')
                 playlist.write('\t</body>\n')
                 playlist.write('</smil>\n')
@@ -246,11 +243,6 @@ class PostActions(object):
         ripper = self.ripper
 
         if self.args.remove_offline_cache:
-            if self.args.settings is not None:
-                storage_path = norm_path(self.args.settings)
-            else:
-                storage_path = default_settings_dir()
-
-            storage_path = os.path.join(storage_path, "Storage")
+            storage_path = os.path.join(base_dir(), "Storage")
             if path_exists(storage_path):
                 shutil.rmtree(enc_str(storage_path))

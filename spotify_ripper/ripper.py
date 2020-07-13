@@ -24,13 +24,7 @@ import wave
 import re
 import select
 import traceback
-
-try:
-    # Python 3
-    import queue
-except ImportError:
-    # Python 2
-    import Queue as queue
+import queue
 
 
 class BitRate(spotify.utils.IntEnum):
@@ -85,7 +79,6 @@ class Ripper(threading.Thread):
         self.logged_out.set()
 
         config = spotify.Config()
-        default_dir = default_settings_dir()
 
         self.post = PostActions(args, self)
         self.web = WebAPI(args, self)
@@ -94,28 +87,18 @@ class Ripper(threading.Thread):
         if proxy is not None:
             config.proxy = proxy
 
-        # application key location
-        if args.key is not None:
-            config.load_application_key_file(args.key)
-        else:
-            if not path_exists(default_dir):
-                os.makedirs(enc_str(default_dir))
+        # Application key
+        if not path_exists(settings_dir()):
+            os.makedirs(enc_str(settings_dir()))
 
-            app_key_path = os.path.join(default_dir, "spotify_appkey.key")
-            if not path_exists(app_key_path):
-                print("\n" + Fore.YELLOW + "Please copy your spotify_appkey.key to " + default_dir + ", or use the --key|-k option" + Fore.RESET)
-                sys.exit(1)
+        app_key_path = os.path.join(settings_dir(), "spotify_appkey.key")
+        if not path_exists(app_key_path):
+            print("\n" + Fore.RED + "Please copy your spotify_appkey.key to " + settings_dir() + Fore.RESET)
+            sys.exit(1)
 
-            config.load_application_key_file(app_key_path)
-
-        # settings directory
-        if args.settings is not None:
-            settings_dir = norm_path(args.settings)
-            config.settings_location = settings_dir
-            config.cache_location = settings_dir
-        else:
-            config.settings_location = default_dir
-            config.cache_location = default_dir
+        config.load_application_key_file(app_key_path)
+        config.settings_location = settings_dir()
+        config.cache_location = settings_dir()
 
         self.session = spotify.Session(config=config)
         self.session.volume_normalization = args.normalize

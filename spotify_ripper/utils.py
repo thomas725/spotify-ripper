@@ -83,22 +83,13 @@ def rm_file(file_name):
             print(Fore.YELLOW + "Warning: error while trying to remove file " + file_name + Fore.RESET)
             print(str(e))
 
-
-def default_settings_dir():
-    return norm_path(os.path.join(os.path.expanduser("~"), ".spotify-ripper"))
-
-
 def settings_dir():
-    args = get_args()
-    return norm_path(args.settings) if args.settings is not None \
-        else default_settings_dir()
-
+    return norm_path(os.path.join(os.path.expanduser("~"), ".spotify-ripper"))
 
 def base_dir():
     args = get_args()
     return norm_path(args.directory) if args.directory is not None \
         else os.getcwd()
-
 
 def calc_file_size(track):
     return (int(get_args().quality) / 8) * track.duration

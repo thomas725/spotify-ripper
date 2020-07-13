@@ -11,7 +11,6 @@ def create_default_dir():
         print("Creating default settings directory: " + default_dir)
         os.makedirs(default_dir.encode("utf-8"))
 
-
 def _read(fn):
     path = os.path.join(os.path.dirname(__file__), fn)
     return open(path).read()

@@ -19,8 +19,7 @@ import tty
 import termios
 
 def load_config(defaults):
-    _settings_dir = settings_dir()
-    config_file = os.path.join(_settings_dir, "config.ini")
+    config_file = os.path.join(settings_dir(), "config.ini")
     if os.path.exists(config_file):
         try:
             config = configparser.ConfigParser()
@@ -61,15 +60,8 @@ def load_config(defaults):
     return defaults
 
 
-def main(prog_args=sys.argv[1:]):
-    # in case we changed the location of the settings directory where the
-    # config file lives, we need to parse this argument before we parse
-    # the rest of the arguments (which can overwrite the options in the
-    # config file)
-    settings_parser = argparse.ArgumentParser(add_help=False)
-    settings_parser.add_argument('-S', '--settings', help='Path to settings, config and temp files directory [Default=~/.spotify-ripper]')
-    args, remaining_argv = settings_parser.parse_known_args(prog_args)
-    init_util_globals(args)
+def main():
+    prog_version = pkg_resources.require("spotify-ripper")[0].version
 
     # load config file, overwriting any defaults
     defaults = {
@@ -93,18 +85,7 @@ def main(prog_args=sys.argv[1:]):
             if value:
                 os.environ[spotipy_env] = value
 
-    parser = argparse.ArgumentParser(prog='spotify-ripper',
-        description='Rips Spotify URIs to media files with tags and album covers',
-        parents=[settings_parser],
-        formatter_class=argparse.RawTextHelpFormatter,
-        epilog='''Example usage:
-    rip a single file: spotify-ripper -u <username> spotify:track:52xaypL0Kjzk0ngwv3oBPR
-    rip entire playlist: spotify-ripper -u <username> spotify:user:<username>:playlist:4vkGNcsS8lRXj4q945NIA4
-    rip a list of URIs: spotify-ripper -u <username> -p <password> list_of_uris.txt
-    rip a list of URIs using last login: spotify-ripper -l list_of_uris.txt
-    rip tracks from Spotify's charts: spotify-ripper -l spotify:charts:regional:global:weekly:latest
-    search for tracks to rip: spotify-ripper -l -Q 160 -o "album:Rumours track:'the chain'"
-    ''')
+    parser = argparse.ArgumentParser(prog='spotify-ripper', description='Rips Spotify URIs to media files with tags and album covers')
 
     # create group to prevent user from using both the -l and -u option
     is_user_set = defaults.get('user') is not None
@@ -123,7 +104,10 @@ def main(prog_args=sys.argv[1:]):
     # set defaults
     parser.set_defaults(**defaults)
 
-    prog_version = pkg_resources.require("spotify-ripper")[0].version
+    # Positional arguments
+    parser.add_argument('uri', nargs="+", help='One or more Spotify URI(s) (either URI, a file of URIs or a search query)')
+
+    # Optional arguments
     parser.add_argument('-a', '--ascii', action='store_true', help='Convert the file name and the metadata tags to ASCII encoding [Default=utf-8]')
     encoding_group.add_argument('--aac', action='store_true', help='Rip songs to AAC format with FreeAAC instead of MP3')
     encoding_group.add_argument('--aiff', action='store_true', help='Rip songs to lossless AIFF encoding instead of MP3')
@@ -148,9 +132,6 @@ def main(prog_args=sys.argv[1:]):
     parser.add_argument('-g', '--genres', choices=['artist', 'album'], help='Attempt to retrieve genre information from Spotify\'s Web API [Default=skip]')
     parser.add_argument('--grouping', help='Set grouping metadata tag to all songs. Can include same tags as --format.')
     encoding_group.add_argument('--id3-v23', action='store_true', help='Store ID3 tags using version v2.3 [Default=v2.4]')
-    parser.add_argument('-k', '--key', help='Path to Spotify application key file [Default=Settings Directory]')
-    group.add_argument('-u', '--user', help='Spotify username')
-    parser.add_argument('-p', '--password', help='Spotify password [Default=ask interactively]')
     parser.add_argument('--large-cover-art', action='store_true', help='Attempt to retrieve 640x640 cover art from Spotify\'s Web API [Default=300x300]')
     group.add_argument('-l', '--last', action='store_true', help='Use last login credentials')
     parser.add_argument('-L', '--log', help='Log in a log-friendly format to a file (use - to log to stdout)')
@@ -161,6 +142,7 @@ def main(prog_args=sys.argv[1:]):
     parser.add_argument('-o', '--overwrite', action='store_true', help='Overwrite existing MP3 files [Default=skip]')
     encoding_group.add_argument('--opus', action='store_true', help='Rip songs to Opus encoding instead of MP3')
     parser.add_argument('--partial-check', choices=['none', 'weak', 'strict'], help='Check for and overwrite partially ripped files. "weak" will err on the side of not re-ripping the file if it is unsure, whereas "strict" will re-rip the file [Default=weak]')
+    parser.add_argument('-p', '--password', help='Spotify password [Default=ask interactively]')
     parser.add_argument('--play-token-resume', metavar="RESUME_AFTER", help='If the \'play token\' is lost to a different device using the same Spotify account, the script will wait a speficied amount of time before restarting. This argument takes the same values as --resume-after [Default=abort]')
     parser.add_argument('--playlist-m3u', action='store_true', help='create a m3u file when ripping a playlist')
     parser.add_argument('--playlist-wpl', action='store_true', help='create a wpl file when ripping a playlist')
@@ -176,13 +158,14 @@ def main(prog_args=sys.argv[1:]):
     parser.add_argument('--stereo-mode', choices=['j', 's', 'f', 'd', 'm', 'l', 'r'], help='Advanced stereo settings for Lame MP3 encoder only')
     parser.add_argument('--stop-after', help='Stops script after a certain amount of time has passed (e.g. 1h30m). Alternatively, accepts a specific time in 24hr format to stop after (e.g 03:30, 16:15)')
     parser.add_argument('--timeout', type=int, help='Override the PySpotify timeout value in seconds (Default=10 seconds)')
+    group.add_argument('-u', '--user', help='Spotify username')
     parser.add_argument('-V', '--version', action='version', version=prog_version)
     encoding_group.add_argument('--wav', action='store_true', help='Rip songs to uncompressed WAV file instead of MP3')
     parser.add_argument('--windows-safe', action='store_true', help='Make filename safe for Windows file system (truncate filename to 255 characters)')
     encoding_group.add_argument('--vorbis', action='store_true', help='Rip songs to Ogg Vorbis encoding instead of MP3')
     parser.add_argument('-r', '--remove-from-playlist', action='store_true', help='Delete tracks from playlist after successful ripping [Default=no]')
-    parser.add_argument('uri', nargs="+", help='One or more Spotify URI(s) (either URI, a file of URIs or a search query)')
-    args = parser.parse_args(remaining_argv)
+
+    args = parser.parse_args()
     init_util_globals(args)
 
     # kind of a hack to get colorama stripping to work when outputting
@@ -207,11 +190,6 @@ def main(prog_args=sys.argv[1:]):
 
     if args.ascii_path_only is True:
         args.ascii = True
-
-    # small sanity check on user option
-    if args.user is not None and args.user == "USER":
-        print(Fore.RED + "Please pass your username as --user " + "<YOUR_USER_NAME> instead of --user USER " + "<YOUR_USER_NAME>..." + Fore.RESET)
-        sys.exit(1)
 
     if args.wav:
         args.output_type = "wav"

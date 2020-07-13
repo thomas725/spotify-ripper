@@ -70,8 +70,6 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -S SETTINGS, --settings SETTINGS
-                        Path to settings, config and temp files directory [Default=~/.spotify-ripper]
   -a, --ascii           Convert the file name and the metadata tags to ASCII encoding [Default=utf-8]
   --aac                 Rip songs to AAC format with FreeAAC instead of MP3
   --aiff                Rip songs to lossless AIFF encoding instead of MP3
@@ -106,9 +104,6 @@ optional arguments:
                         Attempt to retrieve genre information from Spotify's Web API [Default=skip]
   --grouping GROUPING   Set grouping metadata tag to all songs. Can include same tags as --format.
   --id3-v23             Store ID3 tags using version v2.3 [Default=v2.4]
-  -k KEY, --key KEY     Path to Spotify application key file [Default=Settings Directory]
-  -u USER, --user USER  Spotify username
-  -p PASSWORD, --password PASSWORD
                         Spotify password [Default=ask interactively]
   --large-cover-art     Attempt to retrieve 640x640 cover art from Spotify's Web API [Default=300x300]
   -l, --last            Use last login credentials
@@ -122,6 +117,7 @@ optional arguments:
   --opus                Rip songs to Opus encoding instead of MP3
   --partial-check {none,weak,strict}
                         Check for and overwrite partially ripped files. "weak" will err on the side of not re-ripping the file if it is unsure, whereas "strict" will re-rip the file [Default=weak]
+  -p PASSWORD, --password PASSWORD
   --play-token-resume RESUME_AFTER
                         If the 'play token' is lost to a different device using the same Spotify account, the script will wait a speficied amount of time before restarting. This argument takes the same values as --resume-after [Default=abort]
   --playlist-m3u        create a m3u file when ripping a playlist
@@ -144,6 +140,7 @@ optional arguments:
   --stop-after STOP_AFTER
                         Stops script after a certain amount of time has passed (e.g. 1h30m). Alternatively, accepts a specific time in 24hr format to stop after (e.g 03:30, 16:15)
   --timeout TIMEOUT     Override the PySpotify timeout value in seconds (Default=10 seconds)
+  -u USER, --user USER  Spotify username
   -V, --version         show program's version number and exit
   --wav                 Rip songs to uncompressed WAV file instead of MP3
   --windows-safe        Make filename safe for Windows file system (truncate filename to 255 characters)
@@ -166,13 +163,14 @@ Example usage:
 
 ### Config File
 
-For options that you want set on every run, you can use a config file named `config.ini` in the settings folder (defaults to `~/.spotify-ripper`).  The options in the config file use the same name as the command line options with the exception that dashes are translated to `snake_case`.  Any option specified in the command line will overwrite any setting in the config file.  Please put all options under a `[main]` section.
+For options that you want set on every run, you can use a config file named `~/.spotify-ripper/config.ini`. The options in the config file use the same name as the command line options with the exception that dashes are translated to `snake_case`. Any option specified in the command line will overwrite any setting in the config file. Please put all options under a `[main]` section.
 
 Here is an example config file:
 
 ```
 [main]
 ascii = True
+directory = ~/Music
 format = {album_artist}/{album}/{artist} - {track_name}.{ext}
 quality = 160
 vorbis = True
