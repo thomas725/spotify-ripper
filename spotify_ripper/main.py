@@ -6,17 +6,18 @@ from __future__ import unicode_literals
 from colorama import init, Fore, AnsiToWin32
 from spotify_ripper.ripper import Ripper
 from spotify_ripper.utils import *
-import os
-import sys
+import argparse
 import codecs
 import configparser
-import argparse
+import os
 import pkg_resources
 import schedule
-import signal
 import select
-import tty
+import signal
+import sys
 import termios
+import tty
+
 
 def load_config(defaults):
     config_file = os.path.join(settings_dir(), "config.ini")
@@ -58,7 +59,6 @@ def load_config(defaults):
             print(str(e))
 
     return defaults
-
 
 def main():
     prog_version = pkg_resources.require("spotify-ripper")[0].version

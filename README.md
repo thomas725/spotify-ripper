@@ -8,7 +8,16 @@
 
 To generate your Spotify Client ID and Secret, access the [developer dashboard page](https://developer.spotify.com/dashboard/applications) and create a new application. As a redirect URI, add localhost and a port, so that [Spotipy](https://spotipy.readthedocs.io/) can parse it automatically.
 
-Make sure you export the web api credentials and redirect URI in your unix shell:
+Make sure you save the web api credentials and redirect URI in your configuration file (`~/.spotify-ripper/config.ini`):
+
+```
+[main]
+spotipy_client_id='77aa1aa93dc0416397f22a7a9b4a815b'
+spotipy_client_secret='0d79181c57ee412aaa770af257edf07a'
+spotipy_redirect_uri='http://localhost:8000/'
+```
+
+Or alternatively, export the web api credentials and redirect URI in your unix shell:
 
 ```
 export SPOTIPY_CLIENT_ID='77aa1aa93dc0416397f22a7a9b4a815b'
