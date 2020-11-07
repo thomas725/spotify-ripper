@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from colorama import Fore
 from spotify_ripper.utils import *
+from spotify_ripper.spotipy_integration import get_track_json
 import os
 import time
 import spotify
@@ -240,10 +241,6 @@ class WebAPI(object):
 
     def get_large_coverart(self, uri):
 
-        def get_track_json(track_id):
-            url = self.api_url('tracks/' + track_id)
-            return self.request_json(url, "track")
-
         def get_image_data(url):
             response = self.request_url(url, "cover art")
             return response.content
@@ -253,18 +250,15 @@ class WebAPI(object):
         if cached_result is not None:
             return get_image_data(cached_result)
 
-        # extract album id from uri
-        uri_tokens = uri.split(':')
-        if len(uri_tokens) != 3:
-            return None
-
-        track = get_track_json(uri_tokens[2])
+        track = get_track_json(uri)
         if track is None:
+            print(Fore.RED + "Failed to retrieve track information, cover art cannot be set" + Fore.RESET)
             return None
 
         try:
             images = track['album']['images']
         except KeyError:
+            print(Fore.RED + "Album art not found in track JSON, cover art cannot be set" + Fore.RESET)
             return None
 
         for image in images:
