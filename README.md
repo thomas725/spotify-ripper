@@ -119,7 +119,7 @@ optional arguments:
                         Check for and overwrite partially ripped files. "weak" will err on the side of not re-ripping the file if it is unsure, whereas "strict" will re-rip the file [Default=weak]
   -p PASSWORD, --password PASSWORD
   --play-token-resume RESUME_AFTER
-                        If the 'play token' is lost to a different device using the same Spotify account, the script will wait a speficied amount of time before restarting. This argument takes the same values as --resume-after [Default=abort]
+                        If the 'play token' is lost to a different device using the same Spotify account, the script will wait a specified amount of time before restarting. This argument takes the same values as --resume-after [Default=abort]
   --playlist-m3u        create a m3u file when ripping a playlist
   --playlist-wpl        create a wpl file when ripping a playlist
   --playlist-sync       Sync playlist songs (rename and remove old songs)

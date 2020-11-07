@@ -143,7 +143,7 @@ def main():
     encoding_group.add_argument('--opus', action='store_true', help='Rip songs to Opus encoding instead of MP3')
     parser.add_argument('--partial-check', choices=['none', 'weak', 'strict'], help='Check for and overwrite partially ripped files. "weak" will err on the side of not re-ripping the file if it is unsure, whereas "strict" will re-rip the file [Default=weak]')
     parser.add_argument('-p', '--password', help='Spotify password [Default=ask interactively]')
-    parser.add_argument('--play-token-resume', metavar="RESUME_AFTER", help='If the \'play token\' is lost to a different device using the same Spotify account, the script will wait a speficied amount of time before restarting. This argument takes the same values as --resume-after [Default=abort]')
+    parser.add_argument('--play-token-resume', metavar="RESUME_AFTER", help='If the \'play token\' is lost to a different device using the same Spotify account, the script will wait a specified amount of time before restarting. This argument takes the same values as --resume-after [Default=abort]')
     parser.add_argument('--playlist-m3u', action='store_true', help='create a m3u file when ripping a playlist')
     parser.add_argument('--playlist-wpl', action='store_true', help='create a wpl file when ripping a playlist')
     parser.add_argument('--playlist-sync', action='store_true', help='Sync playlist songs (rename and remove old songs)')
