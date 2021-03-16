@@ -10,6 +10,7 @@ from datetime import datetime
 import os
 import sys
 import base64
+import urllib.request
 
 
 def set_metadata_tags(args, audio_file, idx, track, ripper):
@@ -65,16 +66,19 @@ def set_metadata_tags(args, audio_file, idx, track, ripper):
             genres_ascii = [to_ascii(genre) for genre in genres]
 
         # cover art image
-        image = None
-        if args.large_cover_art:
-            image = ripper.web.get_large_coverart(track.link.uri)
+        def get_cover_image(image_link):
+            image_link = 'https://i.scdn.co%s' % (
+                image_link[len('spotify'):].replace(':', '/'))
+            cover_file = urllib.request.urlretrieve(image_link)[0]
 
-        # if we fail, use regular cover size
-        if image is None:
-            image = track.album.cover()
-            if image is not None:
-                image.load(args.timeout)
-                image = image.data
+            with open(cover_file, "rb") as f:
+                if f.mode == "rb":
+                    return f.read()
+                else:
+                    return None
+
+        image_link = str(track.album.cover(2).link)
+        image = get_cover_image(image_link)
 
         def tag_to_ascii(_str, _str_ascii):
             return _str if args.ascii_path_only else _str_ascii
