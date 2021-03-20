@@ -8,24 +8,26 @@ token = None
 spotInstance = None
 spotAuthUsername = None
 
-
 def init_spotipy(username):
-    global spotAuthUsername
-    spotAuthUsername = username
-
+    global auth_manager
+    auth_manager = spotipy.SpotifyOAuth(scope=scope, open_browser=False)
+    
     global token
-    token = spotipy.util.prompt_for_user_token(username, scope)
+    token = auth_manager.get_access_token()
 
     global spotInstance
-    spotInstance = spotipy.Spotify(auth=token)
+    spotInstance = spotipy.Spotify(auth_manager=auth_manager)
     spotInstance.trace = False
 
 def refresh_access_token():
+    global auth_manager
+    auth_manager = spotipy.SpotifyOAuth(scope=scope, open_browser=False)
+    
     global token
-    token = spotipy.util.prompt_for_user_token(spotAuthUsername, scope)
+    token = auth_manager.get_access_token()
 
     global spotInstance
-    spotInstance = spotipy.Spotify(auth=token)
+    spotInstance = spotipy.Spotify(auth_manager=auth_manager)
     spotInstance.trace = False
 
 def remove_all_from_playlist(username, playlistURI):
