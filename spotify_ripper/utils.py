@@ -26,7 +26,10 @@ def get_args():
 
 def enc_str(_str):
     encoding = "ascii" if get_args().ascii else "utf-8"
-    return _str.encode(encoding)
+    if type(_str) == bytes:
+      return _str
+    else:
+      return _str.encode(encoding)
 
 
 def path_exists(path):
