@@ -240,7 +240,7 @@ class Ripper(threading.Thread):
                         print("[ " + str(self.progress.track_idx) + " / " + str(self.progress.total_tracks + self.progress.skipped_tracks) + " ] ", end = '')
 
                     if track.availability != 1 or track.is_local:
-                        print(Fore.RED + 'Track {} - {} is not available, skipping...' + format(track.artists[0].name, track.name) + Fore.RESET)
+                        print(Fore.RED + 'Track {} - {} is not available, skipping... ' + format(track) + Fore.RESET)
                         self.post.log_failure(track)
                         self.progress.track_idx += 1
                         continue
