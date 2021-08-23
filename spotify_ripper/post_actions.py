@@ -157,7 +157,9 @@ class PostActions(object):
         ripper = self.ripper
 
         name = self.get_playlist_name()
-        if name is not None and args.playlist_m3u:
+        if args.playlist_m3u:
+            if name is None:
+                name = "0_playlist"
             name = sanitize_playlist_name(to_ascii(name))
             playlist_path = to_ascii(os.path.join(base_dir(), name + '.m3u'))
 
